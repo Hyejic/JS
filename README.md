@@ -20,7 +20,7 @@ npm init slidev
 ![slidev](https://user-images.githubusercontent.com/71649055/162216739-bce5f4e6-7ca5-463a-8110-a53f290d9fcb.png)
 
 **3. ppt 작성**
-   slidev 공식문서 참고
+   slidev 공식문서 참고  
    https://sli.dev/
 
 **4. 작성 후 pr 보내기**
