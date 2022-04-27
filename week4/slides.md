@@ -14,7 +14,6 @@ lineNumbers: false
 info: |
   ## Slidev Starter Template
   Presentation slides for developers.
-
   Learn more at [Sli.dev](https://sli.dev)
 # persist drawings in exports and build
 drawings:
@@ -51,8 +50,8 @@ class: text-center
 <div>
 
 ## 지역 변수의 생명 주기
-지역 변수의 생명 주기는 함수의 생명 주기와 일치.  
-단 누군가가 지역 변수의 메모리 공간을 참조하고 있으면 해제되지 않고 확보된 상태로 남아있게 되어서 함수의 생명주기와 다를 수 있다.
+var 키워드로 선언한 지역 변수는 함수의 생명 주기와 일치.  
+하지만 누군가가 지역 변수의 메모리 공간을 참조하고 있으면 해제되지 않고 확보된 상태로 남아있게 되어서 함수의 생명주기와 다를 수 있다.
 
 <img
   class="pt-6"
@@ -63,7 +62,8 @@ class: text-center
 <div>
 
 ## 전역 변수의 생명 주기
-var 키워드로 선언한 전역 변수는 전역 객체의 프로퍼티가 된다. 즉, 전역 변수의 생명 주기가 전역 객체의 생명 주기와 일치한다.
+var 키워드로 선언한 전역 변수는 전역 객체의 프로퍼티가 된다.  
+즉, 전역 변수의 생명 주기가 전역 객체의 생명 주기와 일치한다.
 <img
   class="pt-6"
   src="https://user-images.githubusercontent.com/44577555/165118277-b36b8668-068f-42d8-b60d-8ef109348f5b.png"
@@ -77,6 +77,10 @@ h2 {
   color: #9C904C;
   font-size: 1.5em !important;
 }
+p {
+  font-size: 0.8em !important;
+}
+
 </style>
 
 ---
@@ -326,6 +330,422 @@ ES6 모듈은 파일 자체의 독자적인 모듈 스코프를 제공한다. sc
 
 - mjs 확장자 권장.
 - 구형 브라우저에서는 동작하지 않으며 브라우저의 ES6모듈 기능을 사용하더라도 트랜스파일링이나 번들링이 필요하다.
+
+---
+layout: center
+class: text-center
+---
+
+# 15장
+## let, const 키워드와 블록 레벨 스코프
+
+---
+
+# var 키워드로 선언한 변수의 문제점
+
+1. 변수 중복 선언 허용
+2. 함수 레벨 스코프
+3. 변수 호이스팅
+4. ES6 모듈
+
+<style>
+ol {
+  margin-top: 3rem !important;
+}
+ol li {
+  font-size: 1.3em !important;
+  margin-top: 1.3rem !important;
+}
+p {
+  margin: 0.5em !important;
+  font-size: 0.8em !important;
+}
+</style>
+
+---
+
+# 변수 중복 선언 허용
+
+var 키워드로 선언한 변수는 중복 선언이 가능
+
+```javascript {all|2-3|5-6|7-8|all}
+
+  var x = 1;
+  var y = 1;
+
+  // var 키워드 변수에 초기화 문이 있는 경우 자바스크립트 엔진에 의해 var 키워드가 없는 것처럼 동작. 재선언.
+  var x = 100;
+  // 초기화문이 없는 변수 선언문은 무시된다.
+  var y; 
+
+  console.log(x); // 100
+  console.log(y); // 1
+
+```
+
+<p v-click="5">동일한 이름의 변수를 중복 선언하고 값을 할당하면 의도치 않게 먼저 선언된 변수 값이 변경되는 부작용 발생</p>
+
+---
+
+# 함수 레벨 스코프
+
+var 키워드로 선언한 변수는 오로지 함수의 코드 블록만을 지역 스코프로 인정한다.
+
+```javascript {all|4-7|all}
+
+  var x = 1;
+
+  if (true) {
+    // var 키워드로 선언된 변수는 함수의 코드 블록만을 지역스코프로 인정하기 때문에 x 변수가 중복 선언된다.
+    var x = 10;
+  }
+
+  console.log(x) // 10
+
+```
+
+<p v-click="2">동일한 이름의 변수를 중복 선언하고 값을 할당하면 의도치 않게 먼저 선언된 변수 값이 변경되는 부작용 발생</p>
+
+---
+
+# 변수 호이스팅
+
+var 키워드로 선언한 변수는 변수 선언문 이전에 참조할 수 있다.  
+단, 할당문 이전에 변수를 참조하면 언제나 undefined를 반환한다.
+
+```javascript {all|2,11-12|3-4|6-9|all}
+
+  // 이 시점에 호이스팅에 의해 foo변수가 선언
+  // 변수 foo는 undefined로 초기화
+  console.log(foo); // undefined
+
+  // 변수에 값을 할당
+  foo = 123;
+
+  console.log(foo) // 123
+
+  // 변수 선언은 런타임 이전에 자바스크립트 엔진에 의해 암묵적으로 실행된다.
+  var foo;
+
+```
+
+<p v-click="4">변수 선언문 이전에 변수를 참조할 수 있지만 프로그램의 흐름상 맞지 않고 가독성을 떨어뜨리며 오류를 발생시킬 여지를 남긴다.</p>
+
+---
+
+# let 키워드의 특징
+ES6에서 도입.
+
+1. 변수 중복 선언 금지
+2. 블록 레벨 스코프
+3. 변수 호이스팅
+4. 전역 객체와 let
+
+<style>
+ol {
+  margin-top: 3rem !important;
+}
+ol li {
+  font-size: 1.3em !important;
+  margin-top: 1.3rem !important;
+}
+</style>
+
+---
+
+# 변수 중복 선언 금지
+이름이 같은 변수를 중복 선언하면 문법에러 발생
+
+```javascript
+
+  let bar = 123;
+  
+  let bar = 456; // SyntaxError: Identifier 'bar' has already been declared  
+
+
+```
+
+---
+
+# 블록 레벨 스코프
+모든 코드 블록을 지역 스코프로 인정하는 블록 레벨 스코프를 따른다.
+
+```javascript {all|1|2-5|all}
+  let foo = 1; // 전역변수
+  {
+    let foo = 2; // 지역변수
+    let bar = 3; // 지역변수
+  }
+  console.log(foo); // 1
+  console.log(bar); // ReferenceError: bar is not defined -> 전역에서 지역변수를 참조할 수 없다.
+```
+
+---
+
+# 변수 호이스팅
+ 
+let 키워드 변수는 var 키워드 변수와 다르게 선언 단계와 초기화 단계가 분리되어 진행된다.  
+스코프의 시작 지점부터 초기화 시작 지점까지 변수를 참조할 수 없는 구간을 일시적 사각지대라고 한다.  
+
+<div class="mt-10">
+
+var 키워드 변수 생명주기 | let 키워드 변수 생명주기
+:--:|:--:|
+<img width="300" alt="var 키워드 변수 생명주기" src="https://user-images.githubusercontent.com/44577555/165249667-c6cebe00-cd26-406e-9d35-750d03cd8715.png"> | <img width="300" alt="let 키워드 변수 생명주기" src="https://user-images.githubusercontent.com/44577555/165249653-d750aacb-9dd8-4280-bd1c-3038170aa82e.png">
+
+</div>
+
+<style>
+img {
+  margin: 0 auto;
+}
+</style>
+
+---
+
+# let 키워드 변수 호이스팅
+호이스팅이 발생하지 않는 것처럼 동작 -> 선언문이 실행되기 전에 참조하면 참조 에러 발생  
+<br>
+초기화 단계는 변수 선언문에 도달했을 때 실행된다.  
+
+```javascript {all|1-2|4-5|7-8|all}
+  // 초기화 이전의 일시적 사각지대에서는 참조할 수 없다. 
+  console.log(foo); // ReferenceError: foo is not defined
+  
+  let foo; // 변수 선언문에서 초기화 단계가 실행
+  console.log(foo); // undefined
+
+  foo = 1; // 할당문에서 할당 단계 실행
+  console.log(foo); // 1
+```
+
+---
+
+# 전역 객체와 let
+let 키워드로 선언한 전역 변수는 전역 객체의 프로퍼티가 아니다.  
+let 전역 변수는 보이지 않는 개념적인 블록 내에 존재하게 된다.
+
+```javascript
+  let x = 1;
+  
+  console.log(window.x); // undefined -> let, const로 선언한 변수는 전역 객체 window의 프로퍼티가 아니다.
+  console.log(x); // 1
+
+```
+
+---
+
+# const 키워드
+ES6에서 도입.  
+const 키워드는 let 키워드와 대부분 동일하다.
+
+1. 선언과 초기화
+2. 재할당 금지
+3. 상수
+4. const 키워드와 객체
+
+<style>
+ol {
+  margin-top: 3rem !important;
+}
+ol li {
+  font-size: 1.3em !important;
+  margin-top: 1.3rem !important;
+}
+</style>
+
+---
+
+# 선언과 초기화
+const 키워드로 선언한 변수는 반드시 선언과 동시에 초기화해야 한다.
+
+```javascript {all|1-2|3-7|3-9}
+  // 선언과 동시에 초기화를 하지 않으면 에러 발생
+  const foo; // SyntaxError: Missing initializer in const declaration
+  {
+    console.log(foo); // ReferenceError: Cannot access 'foo' before initialization
+    const foo = 1;
+    console.log(foo); // 1
+  }
+
+  console.log(foo); // ReferenceError: foo is not defined
+```
+
+---
+
+# 재할당 금지
+var, let 키워드로 선언한 변수는 재할당이 자유롭지만 const 키워드로 선언한 변수는 재할당이 금지된다.
+
+---
+
+# 상수
+상수는 재할당이 금지된 변수를 말한다.  
+const 키워드로 선언한 변수에 원시 값을 할당한 경우 변수 값을 변경할 수 없기때문에 상수를 표현하는 데 사용하기도 한다.
+
+## 상수의 특징
+- 변수의 상태 유지
+- 가독성이 좋음
+- 유지보수의 편의 상승  
+
+적극적으로 사용 권장.  
+일반적으로 상수의 이름은 대문자로 사용하고 여러 단어로 이뤄진 경우에는 스테이크 케이스로 표현한다.
+
+---
+class: px-20
+---
+
+### 상수 적용 예제  
+
+<div class="pt-10">
+
+#### 고정값으로 사용될 변수를 상수로 적용하기 🤔
+
+```javascript  {all|1-2|2,6|all}
+  // 세율을 의미하는 0.1은 변경할수 없는 상수로서 사용될 값
+  const TAX_RATE = 0.1;
+
+  let perTaxPrice = 100;
+
+  let afterTaxPrice = perTaxPrice + (perTaxPrice * TAX_RATE);
+
+  console.log(afterTaxPrice); // 110
+```
+
+</div>
+
+<div v-click="6" >
+  <p>상수는 유지보수의 편의를 위해 변경되지 않는 변수의 값을 할당할 때 적극 권장한다.</p>
+</div>
+
+<style>
+h3 {
+  color: #9C5170;
+  font-size: 1.5em !important;
+}
+h4 {  
+  margin-bottom: 10px;
+  font-size: 1em !important;
+}
+p {
+  font-size: 0.8em !important;
+}
+</style>
+
+---
+
+# const 키워드와 객체
+const 키워드로 선언된 변수에 객체를 할당한 경우 값을 변경할 수 있다. 이때 객체가 변경되더라도 변수에 할당된 참조 값은 변경되지 않는다.
+const 키워드는 재할당을 금지할 뿐 “불변”을 의미하지는 않는다.
+
+```javascript
+  const person = {
+    name: 'Choi'
+  };
+
+  person.name = 'Kim';
+
+  console.log(person); // {name: "Kim"}
+```
+
+---
+
+# var vs. let vs. const
+변수 선언에는 기본적으로 const를 사용하고 let은 재할당이 필요한 경우에 한정해 사용하는 것이 좋다.
+
+- ES6를 사용한다면 var 키워드를 사용하지 않는다.
+- 재할당이 필요한 경우에 한정해 let 키워드를 사용한다. 이때 변수의 스코프는 최대한 좁게 만든다.
+- 변경이 발생하지 않고 읽기 전용으로 사용하는 원시 값과 객체에는 const 키워드를 사용한다. const 키워드는 재할당을 금지하므로 var, let 키워드보다 안전하다.
+
+---
+
+# 변수 키워드 비교  
+
+<table class="mt-20">
+  <thead>
+    <tr>
+      <th style="width:10%" class="text-center"></th>
+      <th style="width:30%" class="text-center">var</th>
+      <th style="width:30%" class="text-center">let</th>
+      <th style="width:30%" class="text-center">const</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th class="text-center">중복선언</th>
+      <td class="text-center">o</td>
+      <td class="text-center">x</td>
+      <td class="text-center">x</td>
+    </tr>
+    <tr>
+      <th class="text-center">재할당</th>
+      <td class="text-center">o</td>
+      <td class="text-center">o</td>
+      <td class="text-center">x</td>
+    </tr>
+    <tr>
+      <th class="text-center">스코프</th>
+      <td class="text-center">함수의 코드 블록</td>
+      <td>모든 코드 블록(함수, if문, for문, while 문, try/catch문 등)</td>
+      <td>모든 코드 블록(함수, if문, for문, while 문, try/catch문 등)</td>
+    </tr>
+    <tr>
+      <th class="text-center">호이스팅</th>
+      <td>변수 선언문 이전에 참조 가능하고 할당문 이전에 참조하면 undefined 반환.</td>
+      <td>호이스팅이 발생하지 않는 것처럼 동작한다.<br>선언단계와 초기화 단계가 분리되어 진행.<br>변수 선언 이전에 참조하면 참조 에러발생</td>
+      <td>호이스팅이 발생하지 않는 것처럼 동작한다</td>
+    </tr>
+  </tbody>
+</table>
+
+<style>
+  .text-center {
+    text-align:center !important;
+  }
+</style>
+
+---
+
+
+<table class="mt-20">
+  <thead>
+    <tr>
+      <th style="width:10%" class="text-center">키워드</th>
+      <th style="width:10%" class="text-center">중복선언</th>
+      <th style="width:10%" class="text-center">재할당</th>
+      <th style="width:30%">스코프</th>
+      <th style="width:40%">호이스팅</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="text-center">var</td>
+      <td class="text-center">o</td>
+      <td class="text-center">o</td>
+      <td>함수의 코드 블록</td>
+      <td>변수 선언문 이전에 참조 가능하고 할당문 이전에 참조하면 undefined 반환.</td>
+    </tr>
+    <tr>
+      <td class="text-center">let</td>
+      <td class="text-center">x</td>
+      <td class="text-center">o</td>
+      <td>모든 코드 블록(함수, if문, for문, while 문, try/catch문 등)</td>
+      <td>호이스팅이 발생하지 않는 것처럼 동작한다.<br/>선언단계와 초기화 단계가 분리되어 진행. <br/>변수 선언 이전에 참조하면 참조 에러발생</td>
+    </tr>
+    <tr>
+      <td class="text-center">const</td>
+      <td class="text-center">x</td>
+      <td class="text-center">x</td>
+      <td>모든 코드 블록(함수, if문, for문, while 문, try/catch문 등)</td>
+      <td>호이스팅이 발생하지 않는 것처럼 동작한다</td>
+    </tr>
+  </tbody>
+</table>
+
+<style>
+  .text-center {
+    text-align:center !important;
+  }
+</style>
 
 ---
 
