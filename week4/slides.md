@@ -141,6 +141,50 @@ p {
 전역 변수는 생명 주기가 길어서 메모리 리소스도 오랜 기간 소비한다.  
 var 키워드는 중복 선언을 허용하므로 전역 변수로 선언했을때 변수 이름이 중복될 가능성이 있고 의도치 않은 재할당이 이뤄질 수 있다.
 
+<div grid="~ cols-2 gap-4">
+<div>
+
+```javascript 
+  var x = 1;
+  
+  // ...
+
+  // 변수의 중복 선언. 기존 변수에 값을 재할당한다.
+  var x = 100;
+  console.log(x);  //100
+```
+
+</div>
+<div>
+
+```javascript 
+  // **전역 함수의 경우
+
+  function add(x,y) { return x + y; }
+
+  add(1,2); // 1 + 2 = 3 -> 중복 함수 호이스팅
+
+  // ...
+  function add(x,y) { return `${x} + ${y} = ${x + y}`; }
+```
+
+</div>
+</div>
+
+<style>
+h2 {
+  color: #9C904C;
+  font-size: 1em !important;
+  margin-top: 1.3rem !important;
+}
+p {
+  margin: 0.5em !important;
+  font-size: 0.8em !important;
+}
+</style>
+
+---
+
 ## 스코프 체인 상에서 종점에 존재
 변수를 검색할 때 전역 변수가 가장 마지막에 검색되어서 검색 속도가 가장 느리다. (검색 시 지역 스코프에서 전역 스코프로 올라가기 때문)
 
@@ -485,7 +529,7 @@ ol li {
 # 변수 호이스팅
  
 let 키워드 변수는 var 키워드 변수와 다르게 선언 단계와 초기화 단계가 분리되어 진행된다.  
-스코프의 시작 지점부터 초기화 시작 지점까지 변수를 참조할 수 없는 구간을 일시적 사각지대라고 한다.  
+스코프의 시작 지점부터 초기화 시작 지점까지 변수를 참조할 수 없는 구간을 일시적 사각지대 라고 한다.  
 
 <div class="mt-10">
 
@@ -510,13 +554,21 @@ img {
 
 ```javascript {all|1-2|4-5|7-8|all}
   // 초기화 이전의 일시적 사각지대에서는 참조할 수 없다. 
-  console.log(foo); // ReferenceError: foo is not defined
+  // 크롬 브라우저에서 전역 변수로 선언했을때 initialization에러가 아닌 defined에러가 뜬다.
+  console.log(foo); // ReferenceError: foo is not defined 
   
   let foo; // 변수 선언문에서 초기화 단계가 실행
   console.log(foo); // undefined
 
   foo = 1; // 할당문에서 할당 단계 실행
   console.log(foo); // 1
+```
+```javascript {all|1-2|4-5|7-8|all}
+  // ** 블록 레벨에서는 오류가 다르게 출력된다.
+  {
+    console.log(foo); // ReferenceError: Cannot access 'foo' before initialization
+    let foo = 2;
+  }
 ```
 
 ---
