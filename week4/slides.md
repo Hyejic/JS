@@ -45,25 +45,24 @@ class: text-center
 
 ---
 
-# 변수의 생명주기
+# 변수의 생명주기(life cycle)
 <div grid="~ cols-2 gap-10">
-<div>
+<div class="mt-5">
 
 ## 지역 변수의 생명 주기
 var 키워드로 선언한 지역 변수는 함수의 생명 주기와 일치.  
 하지만 누군가가 지역 변수의 메모리 공간을 참조하고 있으면 해제되지 않고 확보된 상태로 남아있게 되어서 함수의 생명주기와 다를 수 있다.
-
 <img
   class="pt-6"
   src="https://user-images.githubusercontent.com/44577555/165106439-35cda26f-b0b2-4f36-97ae-e730d2ab183f.png"
 />
 
 </div>
-<div>
+<div class="mt-5">
 
 ## 전역 변수의 생명 주기
 var 키워드로 선언한 전역 변수는 전역 객체의 프로퍼티가 된다.  
-즉, 전역 변수의 생명 주기가 전역 객체의 생명 주기와 일치한다.
+즉, 전역 변수의 생명 주기가 전역 객체의 생명 주기와 일치한다.  
 <img
   class="pt-6"
   src="https://user-images.githubusercontent.com/44577555/165118277-b36b8668-068f-42d8-b60d-8ef109348f5b.png"
@@ -74,27 +73,32 @@ var 키워드로 선언한 전역 변수는 전역 객체의 프로퍼티가 된
 
 <style>
 h2 {
-  color: #9C904C;
+  color: #b39c36;
   font-size: 1.5em !important;
 }
 p {
   font-size: 0.8em !important;
 }
-
+strong {
+  font-weight: bold;
+  color: #b5794a;
+}
+.slidev-layout p {
+  margin: 0.6em 0;
+}
 </style>
 
 ---
 class: px-20
 ---
 
-### 지역 변수 생명주기 예제  
+### 🤔 지역 변수 생명주기 예제  
 
 <div class="pt-10">
 
-#### 주석 ??? 부분 결과 예측하기 🤔
+#### 주석 ??? 부분 결과 예측하기
 
-```javascript  {all|2|4-7|11|5|all}
-
+```javascript  {all|1|3-6|1,10|4|all}
   var x = 'global';
 
   function foo() {
@@ -105,20 +109,20 @@ class: px-20
   foo();
 
   console.log(x); // global  
-
 ```
 
 </div>
 
-<div v-click="6" >
-  <p>foo 함수 내부에서 선언된 지역 변수 x는 ??? 시점에 이미 선언되었고 undefined로 초기화되었다. <br>이처럼 호이스팅은 스코프 단위로 동작한다.</p>
+<div v-click="6" class="pt-4">
+  <strong>undefined</strong>
+  <p>foo 함수 내부에서 선언된 지역 변수 x는 ??? 시점에 이미 선언되었고 undefined 초기화되었다. <br>이처럼 호이스팅은 스코프 단위로 동작한다.</p>
 
   > 호이스팅이란? 변수 선언이 스코프의 선두로 끌어 올려진 것처럼 동작하는 자바스크립트 고유의 특징
 </div>
 
 <style>
 h3 {
-  color: #9C5170;
+  color: #809e41;
   font-size: 1.5em !important;
 }
 h4 {  
@@ -128,6 +132,10 @@ h4 {
 p {
   font-size: 0.8em !important;
 }
+strong {
+  font-weight: bold;
+  color: #b5794a;
+}
 </style>
 
 ---
@@ -135,7 +143,8 @@ p {
 # 전역 변수의 문제점
 
 ## 암묵적 결합 
-전역 변수를 선언한 의도는 코드 어디서든 참조하고 할당할 수 있는 변수를 사용하겠다는 것. 모든 코드가 전역 변수를 참조하고 변경할 수 있단 의미이다.
+전역 변수를 만든 의도는 어디서든 참조하고 할당할 수 있는 변수를 사용하겠다는 것.  
+<strong>모든 코드가 전역 변수를 참조하고 변경</strong>할 수 있는 암묵적 결합을 허용하는 것이다.
 
 ## 긴 생명 주기  
 전역 변수는 생명 주기가 길어서 메모리 리소스도 오랜 기간 소비한다.  
@@ -173,33 +182,45 @@ var 키워드는 중복 선언을 허용하므로 전역 변수로 선언했을�
 
 <style>
 h2 {
-  color: #9C904C;
+  color: #b39c36;
   font-size: 1em !important;
   margin-top: 1.3rem !important;
 }
 p {
   margin: 0.5em !important;
   font-size: 0.8em !important;
+}
+strong {
+  font-weight: bold;
+  color: #b5794a;
 }
 </style>
 
 ---
 
 ## 스코프 체인 상에서 종점에 존재
-변수를 검색할 때 전역 변수가 가장 마지막에 검색되어서 검색 속도가 가장 느리다. (검색 시 지역 스코프에서 전역 스코프로 올라가기 때문)
+변수를 검색할 때 전역 변수가 가장 마지막에 검색되어서 검색 속도가 가장 느리다.  
+검색 시 지역 스코프에서 전역 스코프로 올라가기 때문
+
+<br>
 
 ## 네임스페이스 오염
-자바스크립트는 파일이 분리되어 있다 해도 전역 스코프를 공유한다. 따라서 동일한 이름을 가진 변수나 함수가 같은 스코프에 존재할 수 있으며 예상치 못한 결과를 가져올 수 있다.
+자바스크립트는 파일이 분리되어 있다 해도 전역 스코프를 공유한다.  
+따라서 동일한 이름을 가진 변수나 함수가 같은 스코프에 존재할 수 있으며 예상치 못한 결과를 가져올 수 있다.
 
 <style>
 h2 {
-  color: #9C904C;
+  color: #b39c36;
   font-size: 1em !important;
   margin-top: 1.3rem !important;
 }
 p {
   margin: 0.5em !important;
   font-size: 0.8em !important;
+}
+strong {
+  font-weight: bold;
+  color: #b5794a;
 }
 </style>
 
@@ -213,11 +234,7 @@ p {
 4. ES6 모듈
 
 
-<p class="absolute bottom-23 left-10">
-
-> 전역 변수를 반드시 사용해야 할 이유를 찾지 못한다면 지역 변수를 사용해야 한다. 변수의 스코프는 좁을수록 좋다.
-
-</p>
+<p class="absolute bottom-23 left-10">⭐️ 전역 변수를 반드시 사용해야 할 이유를 찾지 못한다면 지역 변수를 사용해야 한다. 변수의 스코프는 좁을수록 좋다.</p>
 
 <style>
 ol {
@@ -229,14 +246,15 @@ ol li {
 }
 p {
   margin: 0.5em !important;
-  font-size: 0.8em !important;
+  font-size: 0.9em !important;
 }
 </style>
 
 ---
 
 # 즉시 실행 함수
-즉시 실행 함수는 단 한 번만 호출된다. 모든 코드를 즉시 실행 함수로 감싸면 모든 변수는 즉시 실행 함수의 지역 변수가 된다.
+즉시 실행 함수는 단 한 번만 호출된다.  
+모든 코드를 즉시 실행 함수로 감싸면 모든 변수는 즉시 실행 함수의 지역 변수가 된다.
 
 ```javascript
 
@@ -247,6 +265,12 @@ p {
   console.log(foo); // ReferenceError: foo is not defined
 
 ```
+
+<style>
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+</style>
 
 ---
 
@@ -276,29 +300,44 @@ p {
 
 ```
 
+<style>
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+</style>
+
 ---
 
 # 모듈 패턴
-모듈 패턴은 자바스크립트의 강력한 기능인 클로저를 기반으로 동작하고 전역 변수의 억제는 물론 캡슐화까지 구현할 수 있다.  
-모듈 패턴은 전역 네임스페이스의 오염을 막는 기능은 한정적이지만 정보 은닉을 구현하기 위해 사용한다.
+모듈 패턴은 자바스크립트의 강력한 기능인 <strong>클로저를 기반으로 동작</strong>하고 전역 변수의 억제는 물론 캡슐화까지 구현할 수 있다.  
+모듈 패턴은 전역 네임스페이스의 오염을 막는 기능은 한정적이지만 <strong>정보 은닉을 구현하기 위해 사용</strong>한다.
+
+
+<div class="absolute bottom-9 left-10">
+
+<br>
 
 > '캡슐화'는 객체의 상태를 나타내는 프로퍼티와 프로퍼티를 참조하고 조작할 수 있는 동작인 메서드를 하나로 묶는것을 말한다.  
 캡슐화는 객체의 특정 프로퍼티나 메서드를 감출 목적으로 사용하기도 하는데 이를 정보 은닉이라 한다.
 
+<br>
+
 > 자바스크립트는 public, private, protected 등의 접근 제한자를 제공하지 않는다.
+</div>
 
-```javascript
-  // 계층적 구조 가능
-  var MYAPP = {};
-  
-  MYAPP.person = {
-    name: 'Choi',
-    address: 'Seoul' 
-  };
-
-  console.log(MYAPP.person.name) // Choi
-
-```
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.5em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+</style>
 
 ---
 class: px-20
@@ -307,14 +346,17 @@ class: px-20
 <div grid="~ cols-2 gap-4">
 <div>
 
-### 모듈 패턴 예제  
+### 🤔 모듈 패턴 예제  
 
-<div class="pt-10">
+<div class="pt-5">
 
-#### 자바스크립트에서 퍼블릭, 프라이빗 맴버 만들기 🤔
+#### 자바스크립트에서 퍼블릭, 프라이빗 맴버 만들기
 
 <div v-click="4">
-  <p>예제에서 외부에 노출하고 싶은 변수나 함수를 객체에 담아 프로퍼티를 퍼블릭 맴버로 만들었다. 노출하고 싶지 않은 변수나 함수는 반환하는 객체에 추가하지 않으면 외부에서 접근할 수 없는 프라이빗 맴버가 된다.</p>
+  <p><strong>클로저</strong>는 반환된 내부함수가 자신이 선언됐을 때의 환경(Lexical environment)인 스코프를 기억하여 자신이 선언됐을 때의 환경(스코프) 밖에서 호출되어도 그 환경(스코프)에 접근할 수 있는 함수이다.<br>클로저는 자신이 생성될 때의 환경을 기억하는 함수.</p>
+  <p>
+  외부에 노출하고 싶은 변수나 함수를 객체에 담아 프로퍼티를 퍼블릭 맴버로 만들었다. <br>
+  외부에 노출하고 싶지 않은 변수나 함수는 반환하는 객체에 추가하지 않으면 외부에서 접근할 수 없는 프라이빗 맴버가 된다.</p>
 </div>
 
 </div>
@@ -354,17 +396,21 @@ class: px-20
 </div>
 
 <style>
-h3 {
-  color: #9C5170;
-  font-size: 1.5em !important;
-}
-h4 {  
-  margin-bottom: 10px;
-  font-size: 1em !important;
-}
-p {
-  font-size: 0.8em !important;
-}
+  h3 {
+    color: #809e41;
+    font-size: 1.5em !important;
+  }
+  h4 {  
+    margin-bottom: 10px;
+    font-size: 1em !important;
+  }
+  p {
+    font-size: 0.8em !important;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
 </style>
 
 ---
@@ -373,8 +419,15 @@ p {
 ES6 모듈은 파일 자체의 독자적인 모듈 스코프를 제공한다. script 테그에 type=”module” 어트리뷰트를 추가하면 로드된 자바스크립트 파일은 모듈로서 동작한다.
 
 - mjs 확장자 권장.
-- 구형 브라우저에서는 동작하지 않으며 브라우저의 ES6모듈 기능을 사용하더라도 트랜스파일링이나 번들링이 필요하다.
+- 구형 브라우저에서는 동작하지 않으며 브라우저의 ES6모듈 기능을 사용하더라도 트랜스파일링이나 번들링이 필요하다.  
 
+
+<style>
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+
+</style>
 ---
 layout: center
 class: text-center
