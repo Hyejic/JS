@@ -284,7 +284,7 @@ const person = { name: "lee" };
 
 Object.preventExtensions(person);
 
-console.log(Object.isExtensible(person)); // false
+console.log(Object.isExtensible(person)); // true
 
 // 프로퍼티 추가 금지
 person.age = 20; // 무시 strict mode에서는 에러
@@ -297,7 +297,7 @@ Object.defineProperty(person, "age", { value: 20 }); // TypeError: Cannot define
 
 ---
 
-# 객체 밀봉(Object.isSealed)
+# 객체 밀봉(Object.seal)
 
 ```js
 const person = { name: "lee" };
