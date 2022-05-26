@@ -731,18 +731,25 @@ class: px-20
 
 ---
 
-# var 키워드로 선언한 변수의 문제점
+# 클래스의 인스턴스 생성 과정
 
-1. 변수 중복 선언 허용
-2. 함수 레벨 스코프
-3. 변수 호이스팅  
+1. 인스턴스 생성과 this 바인딩  
+new 연산자와 함께 클래스를 호출하면 constructor의 내부 코드가 실행되기에 앞서 암묵적으로 빈 객체가 생성된다.  
+  -> 클래스가 생성한 인스턴스  
+인스턴스의 프로토타입으로 클래스의 prototype 프로퍼티가 가리키는 객체가 설정된다.  
+빈객체, 즉 인스턴스는 this에 바인딩된다. 따라서 constructor 내부의 this는 클래스가 생성한 인스턴스를 가리킨다.
+2. 인스턴스 초기화
+constructor의 내부 코드가 실행되어 this에 바인딩되어 있는 인스턴스를 초기화한다.  
+즉, this에 바인딩 되어 있는 인스턴스에 프로퍼티를 추가하고 constructor가 인수로 전달받은 초기값으로 인스턴스의 프로퍼티 값을 초기화한다. 만약 constructor가 생략 되었다면 이 과정도 생략된다.
+3. 인스턴스의 반환
+클래스의 모든처리가 끝나면 완성된 인스턴스가 바인딩된 this가 암묵적으로 반환된다.
 
 <style>
 ol {
   margin-top: 3rem !important;
 }
 ol li {
-  font-size: 1.3em !important;
+  font-size: 1em !important;
   margin-top: 1.3rem !important;
 }
 p {
@@ -753,97 +760,196 @@ p {
 
 ---
 
-# 변수 중복 선언 허용
+```javascript
+  class Person {
+    // 생성자
+    constructor(name) {
+      // 1. 암묵적으로 인스턴스가 생성되고 this에 바인딩된다.
+      console.log(this); // Person {}
+      console.log(Object.getPrototypeOf(this) === Person.prototype); // true
 
-var 키워드로 선언한 변수는 중복 선언이 가능
+      // 2. this에 바인딩되어 있는 인스턴스를 초기화한다.
+      this.name = name;
 
-```javascript {all|2-3|5-6|7-8|all}
-
-  var x = 1;
-  var y = 1;
-
-  // var 키워드 변수에 초기화 문이 있는 경우 자바스크립트 엔진에 의해 var 키워드가 없는 것처럼 동작. 재선언.
-  var x = 100;
-  // 초기화문이 없는 변수 선언문은 무시된다.
-  var y; 
-
-  console.log(x); // 100
-  console.log(y); // 1
-
+      // 3. 완선된 인스턴스가 바인딩된 this가 암묵적으로 반환된다. return문 반드시 생략
+    }
+  }
 ```
-
-<p v-click="5">동일한 이름의 변수를 중복 선언하고 값을 할당하면 의도치 않게 먼저 선언된 변수 값이 변경되는 부작용 발생</p>
-
-<style>
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-</style>
----
-
-# 함수 레벨 스코프
-
-var 키워드로 선언한 변수는 오로지 함수의 코드 블록만을 지역 스코프로 인정한다.
-
-```javascript {all|4-7|all}
-
-  var x = 1;
-
-  if (true) {
-    // var 키워드로 선언된 변수는 함수의 코드 블록만을 지역스코프로 인정하기 때문에 x 변수가 중복 선언된다.
-    var x = 10;
-  }
-
-  console.log(x) // 10
-
-```
-
-<style>
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-</style>
 
 ---
 
-# 변수 호이스팅
+# 프로퍼티
 
-var 키워드로 선언한 변수는 변수 선언문 이전에 참조할 수 있다.  
-단, 할당문 이전에 변수를 참조하면 언제나 undefined를 반환한다.
+## 인스턴스 프로퍼티
+인스턴스 프로퍼티는 constructor 내부에서 정의해야 한다.
 
-```javascript {all|2,11-12|3-4|6-9|all}
+```javascript
+  class Person {
+    constructor(name) {
+      // 인스턴스 프로퍼티
+      this.name = name; // name 프로퍼티는 public하다.
+    }
+  }
 
-  // 이 시점에 호이스팅에 의해 foo변수가 선언
-  // 변수 foo는 undefined로 초기화
-  console.log(foo); // undefined
+  const me = new Person('Choi');
+  console.log(me); // Person {name: "Choi"}
+  // name은 public하다.
+  console.log(me.name); // Choi
+``` 
+constructor 내부에서 this에 추가한 프로퍼티는 언제나 클래스가 생성한 인스턴스의 프로퍼티가 된다.
 
-  // 변수에 값을 할당
-  foo = 123;
-
-  console.log(foo) // 123
-
-  // 변수 선언은 런타임 이전에 자바스크립트 엔진에 의해 암묵적으로 실행된다.
-  var foo;
-
-```
-
-<p v-click="4">변수 선언문 이전에 변수를 참조할 수 있지만 프로그램의 흐름상 맞지 않고 가독성을 떨어뜨리며 오류를 발생시킬 여지를 남긴다.</p>
 
 <style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.5em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
   .slidev-layout h1 + p {
     opacity: 1;
   }
 </style>
 
 ---
+ 
+## 접근자 프로퍼티
+접근자 프로퍼티는 자체적으로는 값을 갖지 않고 다른 데이터 프로퍼티의 값을 읽거나 저장할 때 사용하는 접근자 함수로 구성된 프로퍼티다. 
 
-# let 키워드의 특징
-ES6에서 도입.
+<div grid="~ cols-2 gap-4">
+<div>
 
-1. 변수 중복 선언 금지
-2. 블록 레벨 스코프
-3. 변수 호이스팅
-4. 전역 객체와 let
+```javascript
+  class Person {
+    constructor(firstName, lastName) {
+      this.firstName = firstName;
+      this.lastName = lastName;
+    }
+    // fullName은 접근자 함수로 구성된 접근자 프로퍼티다.
+    // getter 함수
+    get fullName() {
+      return `${this.firstName} ${this.lastName}`;
+    },
+    // setter 함수
+    set fullName(name) {
+      // 배열 디스트럭처링 할당
+      [this.firstName, this.lastName] = name.split(' ');
+    }
+  }
+  
+  const me = new Person('Hyeji', 'Choi');
+``` 
+
+</div>
+<div>
+
+```javascript
+  // 데이터 프로퍼티를 통한 프로퍼티 값의 참조.
+  console.log(`${person.firstName} ${person.lastName}`); 
+  // Hyeji Choi
+
+  // 접근자 프로퍼티를 통한 프로퍼티 값의 저장
+  // 접근자 프로퍼티 fullName에 값을 저장하면 setter함수가 호출된다.
+  person.fullName = `Hihi Choi`;
+  console.log(person); 
+  // {firstName: 'Hihi', lastName: 'Choi'}
+
+  // 접근자 프로퍼티를 통한 프로퍼티 값의 참조
+  // 접근자 프로퍼티 fullName에 접근하면 getter 함수가 호출된다.
+  console.log(person.fullName); // Hihi Choi
+
+  // fullName은 접근자 프로퍼티다.
+  // 접근자 프로퍼티는 get, set, enumeravle, configurable 프로퍼티 어트리뷰트를 갖는다.
+  console.log(Object.getOwnPropertyDescriptor(person, 'fullName')); 
+  // {enumerable: true, configurable: true, get: ƒ, set: ƒ}
+``` 
+
+</div>
+</div>
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.5em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+</style>
+
+---
+
+접근자 프로퍼티는 getter 함수와 setter 함수로 구성되어있다.  
+
+- getter  
+`인스턴스 프로퍼티에 접근할 때마다` 프로퍼티 값을 조작하거나 별도의 행위가 필요할 때 사용.  
+반드시 무언가를 반환해야한다.  
+- setter  
+`인스턴스 프로퍼티에 값을 할당할 때마다` 프로퍼티 값을 조작하거나 별도의 행위가 필요할 때 사용.  
+할당해야 할 때 사용하므로 반드시 매개변수가 있어야 한다. 단 하나의 값만 할당받기 때문에 단 하나의 매개변수만 선언할 수 있다. 
+
+---
+
+## 클래스 필드 정의 제안
+클래스 필드는 클래스 기반 객체지향 언어에서 클래스가 생성할 인스턴스의 프로퍼티를 가리키는 용어다.  
+자바의 클래스 필드는 마치 클래스 내부에서 변수처럼 사용된다.  
+
+```java
+  // 자바의 클래스 정의
+  public class Person {
+    // 1. 클래스 필드 정의
+    // 클래스 필드는 클래스 몸체에 this 없이 선언해야 한다.
+    private String firstName = "";
+    private String lastName = "";
+
+    // 생성자
+    Person(String firstName, String lastName) {
+      // 3. this는 언제나 클래스가 생성할 인스턴스를 가리킨다.
+      this.firstName = firstName;
+      this.lastName = lastName;
+    }
+
+    public String getFullName() {
+      // 2. 클래스 필드 참조
+      // this 없이도 클래스 필드를 참조할 수 있다.
+      return firstName + " " + lastName;
+    }
+  }
+``` 
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.5em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+</style>
+
+---
+
+자바스크립트의 클래스 몸체에는 메서드만 선언할 수 있다.  
+따라서 클래스 몸체에서 자바와 유사하게 클래스 필드를 선언하면 문법에러가 발생한다.  
+하지만 최신 브라우저 또는 최신 Node.js에서 실행하면 문법 에러가 발생하지 않고 정상 동작한다.  
+<span class="desc">"Class field declarations"가 2021년 1월 TC39 프로세스의 stage3에 제안</span>  
+또는 Babel과 같은 build 시스템을 사용한다면 기능을 사용할 수 있다.
+
+```javascript
+  class Person {
+    // 클래스 필드 정의
+    name = 'Choi';
+  }
+  const me = new Person('Choi');
+  console.log(me); // Person {name: 'Choi'}
+```
 
 <style>
 ol {
@@ -853,325 +959,398 @@ ol li {
   font-size: 1.3em !important;
   margin-top: 1.3rem !important;
 }
+.desc {
+  opacity: 0.5;
+  font-size: 0.8em;
+}
 </style>
 
 ---
 
-# 변수 중복 선언 금지
-이름이 같은 변수를 중복 선언하면 문법에러 발생
+## 클래스 필드 정의 정의 방법
+
+- this에 클래스 필드를 바인딩해서는 안 된다. this는 클래스의 constructor와 메서드 내에서만 유효하다.
+  ```javascript
+    class Person {
+      // this에 클래스 필드를 바인딩해서는 안 된다.
+      this.name = ''; // Uncaught SyntaxError: Unexpected token '.'
+    }
+  ``` 
+- 클래스 필드를 참조하는 경우 자바스크립트에서는 this를 반드시 사용해야 한다.
+  ```javascript
+    class Person {
+      // 클래스 필드
+      name = 'Choi';
+      
+      constructor() {
+        console.log(name); // 에러 발생 안됨. console 값 출력 안됨.
+      }
+    }
+
+    new Person();
+  ``` 
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.5em !important;
+  }
+  ul {
+    margin-top: 1em;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+</style>
+
+---
+
+- 클래스 필드에 초기값을 할당하지 않으면 undefined를 갖는다.
+  ```javascript
+    class Person {
+      // 클래스 필드 초기화 하지 않으면 undefined를 갖는다.
+      name;
+    }
+
+    const me = new Person();
+    console.log(me); // Person {name: undefined}
+  ``` 
+- 인스턴스를 생성할 때 외부의 초기값으로 클래스 필드를 초기화해야 할 필요가 있다면 constructor에서 클래스 필드를 초기화해야 한다.
+  ```javascript
+    class Person {
+      name;
+
+      constructor(name) {
+        // 클래스 필드 초기화
+        this.name = name;
+      }
+    }
+    
+    const me = new Person('Choi');
+    console.log(me); // Person {name: 'Choi'}
+  ``` 
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.5em !important;
+  }
+  ul {
+    margin-top: 1em;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+</style>
+
+---
+
+- 함수는 일급 객체 이므로 함수를 클래스 필드에 할당할 수 있다. 따라서 클래스 필드를 통해 메서드를 정의할 수도 있다.
+  ```javascript
+    class Person {
+      // 클래스 필드에 문자열을 할당
+      name = 'Choi';
+
+      // 클래스 필드에 함수 할당
+      getName = function(){
+        return this.name;
+      }
+      // 화살표 함수도 가능
+      // getName = () => this.name;
+    }
+    
+    const me = new Person();
+    console.log(me); // Person {name: 'Choi', getName: ƒ}
+    console.log(me.getName()); // Choi
+  ``` 
+  이처럼 클래스 필드에 함수를 할당하는 경우, 이 함수는 프로토타입 메서드가 아닌 인스턴스 메서드가 된다. 클래스 필드에 함수를 할당하는 것은 권장하지 않는다.
+
+  ### 클래스 필드 정의 제안으로 인스턴스 프로퍼티 정의하는 방법 두 가지
+  1. 외부 초기값으로 클래스 필드를 <strong>초기화할 필요가 있다면</strong> - constructor에서 인스턴스 프로퍼티를 정의하는 기존 방식 사용.
+  2. 외부 초기값으로 클래스 필드를 <strong>초기화할 필요가 없다면</strong> - 기존의 constructor에서 인스턴스 프로퍼티를 정의하는 방식과 클래스 필드 정의 제안 모두 사용 가능.
+
+
+<style>
+  h3 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+</style>
+
+---
+
+## private 필드 정의 제안
+자바스크립트는 캡슐화를 완전하게 지원하지 않는다.  
+ES6의 클래스도 생성자 함수와 마찬가지로 private, public, protected 키워드와 같은 접근 제한자를 지원하지 않는다.  
+
+따라서 인스턴스 프로퍼티는 인스턴스를 통해 클래스 외부에서 언제나 참조할 수 있는 pubilc이다.  
+클래스 필드 정의 제안을 사용하더라도 클래스 필드는 public하기 때문에 외부에 그대로 노출된다.
+
+<div grid="~ cols-2 gap-4">
+<div>
+
+  ```javascript
+    class Person {
+      constructor(name) {
+        // 인스턴스 프로퍼티는 기본적으로 public하다.
+        this.name = name; 
+      }
+    }
+
+    const me = new Person('Choi');
+    console.log(me.name); // Choi
+  ``` 
+
+</div>
+<div>
 
 ```javascript
+  class Person {
+    // 클래스 필드도 기본적으로 public하다.
+    name = 'Choi'; 
+  }
 
-  let bar = 123;
-  
-  let bar = 456; // SyntaxError: Identifier 'bar' has already been declared  
+  // 인스턴스 생성
+  const me = new Person();
+  console.log(me.name); // Choi
+``` 
+
+</div>
+</div>
 
 
-```
+다행히도 TC39 프로세서의 stage 3에는 private 필드를 정의할 수 있는 새로운 표준 사양이 제안되어 있다. 표준 사양으로 승급이 확실시되는 이 제안도 최신 브라우저와 최신 Node.js에 이미 구현되어 있다.  
 
 <style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
   .slidev-layout h1 + p {
     opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
   }
 </style>
 
 ---
 
-# 블록 레벨 스코프
-모든 코드 블록을 지역 스코프로 인정하는 블록 레벨 스코프를 따른다.
-
-```javascript {all|1|2-5|all}
-  let foo = 1; // 전역변수
-  {
-    let foo = 2; // 지역변수
-    let bar = 3; // 지역변수
-  }
-  console.log(foo); // 1
-  console.log(bar); // ReferenceError: bar is not defined -> 전역에서 지역변수를 참조할 수 없다.
-```
-
-<style>
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-</style>
-
----
-
-# 변수 호이스팅
+## private 필드 정의 방법
  
-let 키워드 변수는 var 키워드 변수와 다르게 선언 단계와 초기화 단계가 분리되어 진행된다.  
-스코프의 시작 지점부터 초기화 시작 지점까지 변수를 참조할 수 없는 구간을 일시적 사각지대 라고 한다.  
-
-<div class="mt-10">
-
-var 키워드 변수 생명주기 | let 키워드 변수 생명주기
-:--:|:--:|
-<img width="300" alt="var 키워드 변수 생명주기" src="https://user-images.githubusercontent.com/44577555/165249667-c6cebe00-cd26-406e-9d35-750d03cd8715.png"> | <img width="300" alt="let 키워드 변수 생명주기" src="https://user-images.githubusercontent.com/44577555/165249653-d750aacb-9dd8-4280-bd1c-3038170aa82e.png">
-
-</div>
-
-<style>
-  img {
-    margin: 0 auto;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-</style>
-
----
-
-# let 키워드 변수 호이스팅
-호이스팅이 발생하지 않는 것처럼 동작 -> 선언문이 실행되기 전에 참조하면 참조 에러 발생  
-<br>
-초기화 단계는 변수 선언문에 도달했을 때 실행된다.  
-
-```javascript {all|1-2|4-5|7-8|all}
-  // 초기화 이전의 일시적 사각지대에서는 참조할 수 없다. 
-  // 크롬 브라우저에서 전역 변수로 선언했을때 initialization에러가 아닌 defined에러가 뜬다.
-  console.log(foo); // ReferenceError: foo is not defined 
-  
-  let foo; // 변수 선언문에서 초기화 단계가 실행
-  console.log(foo); // undefined
-
-  foo = 1; // 할당문에서 할당 단계 실행
-  console.log(foo); // 1
-```
-
-```javascript 
-  // ** 블록 레벨에서는 오류가 다르게 출력된다.
-  {
-    console.log(foo); // ReferenceError: Cannot access 'foo' before initialization
-    let foo = 2;
-  }
-```
-
-
-<style>
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-</style>
-
----
-
-# 전역 객체와 let
-let 키워드로 선언한 전역 변수는 전역 객체의 프로퍼티가 아니다.  
-let 전역 변수는 보이지 않는 개념적인 블록 내에 존재하게 된다.
+private 필드의 선두에는 #을 붙여준다.  
+private 필드를 참조할 때도 #을 붙여주어야 한다.  
 
 ```javascript
-  let x = 1;
-  
-  console.log(window.x); // undefined -> let, const로 선언한 변수는 전역 객체 window의 프로퍼티가 아니다.
-  console.log(x); // 1
-
-```
-
-<style>
-  .slidev-layout h1 + p {
-    opacity: 1;
+  class Person {
+    // private 필드 정의
+    #name = '';
+    constructor(name) {
+      // private 필드 참조
+      this.#name = name;
+    }
   }
-</style>
 
----
+  const me = new Person('Choi');
 
-# const 키워드
-ES6에서 도입.  
-const 키워드는 let 키워드와 대부분 동일하다.
-
-1. 선언과 초기화
-2. 재할당 금지
-3. 상수
-4. const 키워드와 객체
-
+  // private 필드 #name은 클래스 외부에서 참조할 수 없다.
+  console.log(me.#name);
+  // Uncaught SyntaxError: Private field '#name' must be declared in an enclosing class
+``` 
 <style>
-  ol {
-    margin-top: 3rem !important;
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
   }
-  ol li {
-    font-size: 1.3em !important;
-    margin-top: 1.3rem !important;
+  p, li {
+    font-size: 0.8em !important;
   }
   .slidev-layout h1 + p {
     opacity: 1;
   }
-</style>
-
----
-
-# 선언과 초기화
-const 키워드로 선언한 변수는 반드시 선언과 동시에 초기화해야 한다.
-
-```javascript {all|1-2|3-7|3-9}
-  // 선언과 동시에 초기화를 하지 않으면 에러 발생
-  const foo; // SyntaxError: Missing initializer in const declaration
-  {
-    console.log(foo); // ReferenceError: Cannot access 'foo' before initialization
-    const foo = 1;
-    console.log(foo); // 1
-  }
-
-  console.log(foo); // ReferenceError: foo is not defined
-```
-
-<style>
-  .slidev-layout h1 + p {
-    opacity: 1;
+  strong {
+    font-weight: bold;
+    color: #b5794a;
   }
 </style>
 
 ---
 
-# 재할당 금지
-var, let 키워드로 선언한 변수는 재할당이 자유롭지만 const 키워드로 선언한 변수는 재할당이 금지된다.
 
-<style>
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-</style>
+<div grid="~ cols-2 gap-4">
+<div style="width:400px">
 
----
-
-# 상수
-상수는 재할당이 금지된 변수를 말한다.  
-const 키워드로 선언한 변수에 원시 값을 할당한 경우 변수 값을 변경할 수 없기때문에 상수를 표현하는 데 사용하기도 한다.
-
-## 상수의 특징
-- 변수의 상태 유지
-- 가독성이 좋음
-- 유지보수의 편의 상승  
-
-적극적으로 사용 권장.  
-일반적으로 상수의 이름은 대문자로 사용하고 여러 단어로 이뤄진 경우에는 스네이크 케이스로 표현한다.
-
-<style>
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-</style>
-
-
----
-class: px-20
----
-
-### 상수 적용 예제  
-
-<div class="pt-10">
-
-#### 고정값으로 사용될 변수를 상수로 적용하기 🤔
-
-```javascript  {all|1-2|2,6|all}
-  // 세율을 의미하는 0.1은 변경할수 없는 상수로서 사용될 값
-  const TAX_RATE = 0.1;
-
-  let perTaxPrice = 100;
-
-  let afterTaxPrice = perTaxPrice + (perTaxPrice * TAX_RATE);
-
-  console.log(afterTaxPrice); // 110
-```
-
-</div>
-
-<div v-click="6" >
-  <p>상수는 유지보수의 편의를 위해 변경되지 않는 변수의 값을 할당할 때 적극 권장한다.</p>
-</div>
-
-<style>
-h3 {
-  color: #9C5170;
-  font-size: 1.5em !important;
-}
-h4 {  
-  margin-bottom: 10px;
-  font-size: 1em !important;
-}
-p {
-  font-size: 0.8em !important;
-}
-</style>
-
----
-
-# const 키워드와 객체
-const 키워드로 선언된 변수에 객체를 할당한 경우 값을 변경할 수 있다. 이때 객체가 변경되더라도 변수에 할당된 참조 값은 변경되지 않는다.
-const 키워드는 재할당을 금지할 뿐 “불변”을 의미하지는 않는다.
-
-```javascript
-  const person = {
-    name: 'Choi'
-  };
-
-  person.name = 'Kim';
-
-  console.log(person); // {name: "Kim"}
-```
-
-
-<style>
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-</style>
-
----
-
-# var vs. let vs. const
-변수 선언에는 기본적으로 const를 사용하고 let은 재할당이 필요한 경우에 한정해 사용하는 것이 좋다.
-
-- ES6를 사용한다면 var 키워드를 사용하지 않는다.
-- 재할당이 필요한 경우에 한정해 let 키워드를 사용한다. 이때 변수의 스코프는 최대한 좁게 만든다.
-- 변경이 발생하지 않고 읽기 전용으로 사용하는 원시 값과 객체에는 const 키워드를 사용한다. const 키워드는 재할당을 금지하므로 var, let 키워드보다 안전하다.
-
-
----
-
-# 변수 키워드 비교  
-
-<table class="mt-20">
+public 필드는 어디서든 참조할 수 있지만  
+private 필드는 클래스 내부에서만 참조할 수 있다.
+<table class="mt-5">
   <thead>
     <tr>
-      <th style="width:10%" class="text-center">키워드</th>
-      <th style="width:10%" class="text-center">중복선언</th>
-      <th style="width:10%" class="text-center">재할당</th>
-      <th style="width:30%">스코프</th>
-      <th style="width:40%">호이스팅</th>
+      <th style="width:40%" class="text-center">접근 가능성</th>
+      <th style="width:30%" class="text-center">public</th>
+      <th style="width:30%" class="text-center">private</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td class="text-center">var</td>
+      <td class="text-center">클래스 내부</td>
       <td class="text-center">o</td>
       <td class="text-center">o</td>
-      <td>함수의 코드 블록</td>
-      <td>변수 선언문 이전에 참조 가능하고 할당문 이전에 참조하면 undefined 반환.</td>
     </tr>
     <tr>
-      <td class="text-center">let</td>
-      <td class="text-center">x</td>
+      <td class="text-center">자식 클래스 내부</td>
       <td class="text-center">o</td>
-      <td>모든 코드 블록(함수, if문, for문, while 문, try/catch문 등)</td>
-      <td>호이스팅이 발생하지 않는 것처럼 동작한다.<br/>선언단계와 초기화 단계가 분리되어 진행. <br/>변수 선언 이전에 참조하면 참조 에러발생</td>
+      <td class="text-center">x</td>
     </tr>
     <tr>
-      <td class="text-center">const</td>
+      <td class="text-center">클래스 인스턴스를 통한 접근</td>
+      <td class="text-center">o</td>
       <td class="text-center">x</td>
-      <td class="text-center">x</td>
-      <td>모든 코드 블록(함수, if문, for문, while 문, try/catch문 등)</td>
-      <td>호이스팅이 발생하지 않는 것처럼 동작한다</td>
     </tr>
   </tbody>
 </table>
+</div>
+<div>
+
+외부에서 private 필드에 직접 접근할 수 있는 방법은 없다.  
+다만 접근자 프로퍼티를 통해 간접적으로 접근하는 방법은 유효하다.
+
+```javascript
+  class Person {
+    #name = ''; // private 필드 정의
+    constructor(name) {
+      this.#name = name;
+    }
+    //name은 접근자 프로퍼티다.
+    get name() {
+      return this.#name.trim(); // private 필드를 참조하여 trim한 다음 반환한다.
+    }
+  }
+```
+
+private 필드는 반드시 클래스 몸체에 정의해야 한다.
+```javascript
+  class Person {
+    constructor(name) {
+      // private 필드는 클래스 몸체에서 정의해야 한다.
+      this.#name = name;
+      // Uncaught SyntaxError: Private field '#name' must be declared in an enclosing class
+    }
+  }
+```
+</div>
+</div>
 
 <style>
-  .text-center {
-    text-align:center !important;
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  th, td {
+    text-align: center !important;
+    font-size: 0.6em !important;
   }
 </style>
 
+---
+
+## static 필드 정의 제안
+클래스애는 static 키워드를 사용하여 정적 메서드를 정의 할 수 있지만 정적 필드를 정의할 수는 없었다.  
+하지만 static public 필드, static private 필드, static private 메서드를 정의할 수 있는 새로운 표준 사양이 제안되어있다.  
+<span class="desc">"Class field declarations"가 2021년 1월 TC39 프로세스의 stage3에 제안</span>  
+
+```javascript
+  class MyMath {
+    // static public 필드 정의
+    static PI = 22 / 7;
+
+    // static private 필드 정의
+    static #num = 10;
+
+    // static 메서드
+    static increment() {
+      return ++MyMath.#num;
+    }
+  }
+
+  console.log(MyMath.PI); // 3.142857142857143
+  console.log(MyMath.increment()); // 11
+``` 
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+</style>
+
+---
+
+# 클래스 상속과 생성자 함수 상속
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+</style>
 
 ---
 layout: center
