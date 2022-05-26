@@ -330,10 +330,10 @@ img {
   ```
 
 <style>
-  h2 {
-  color: #b39c36;
-  font-size: 1em !important;
-  margin-top: 1.3rem !important;
+h2 {
+color: #b39c36;
+font-size: 1em !important;
+margin-top: 1.3rem !important;
 }
 p {
   margin: 0.5em !important;
@@ -386,24 +386,54 @@ strong {
 
 ---
 
-# 전역 변수의 사용을 억제하는 방법
+# 프로토타입 메서드
 
-1. 즉시 실행 함수
-2. 네임스페이스 객체
-3. 모듈 패턴
-4. ES6 모듈
+<div grid="~ cols-2 gap-10">
+<div>
 
+셍성자 함수를 사용하여 인스턴스를 생성하는 경우 프로토타입 메서드를 생성하기 위해서는 다음과 같이 명시적으로 프로토타입에 메서드를 추가해야 한다.
+```javascript
+  // 생성자 함수
+  function Person(name) {
+    this.name = name;
+  }
 
-<p class="absolute bottom-23 left-10">⭐️ 전역 변수를 반드시 사용해야 할 이유를 찾지 못한다면 지역 변수를 사용해야 한다. 변수의 스코프는 좁을수록 좋다.</p>
+  // ⭐️ 생성자 함수 프로토타입 메서드
+  Person.prototype.sayHi = function() {
+    console.log(`Hi my name is ${this.name}`);
+  }
+
+  const me = new Peroson('Choi');
+  me.sayHi(); // Hi my name is Choi
+```   
+
+</div>
+<div>
+
+클래스 몸체에서 정의한 메서드는 클래스의 prototype 프로퍼티에 메서드를 추가하지 않아도 기본적으로 프로토타입 메서드가 된다.
+```javascript
+  class Person {
+    // 생성자
+    constructor(name) {
+      // 인스턴스 생성 및 초기화
+      this.name = name;
+    }
+  }
+
+  // ⭐️ 클래스 프로토타입 메서드
+  sayHi() {
+    console.log(`Hi my name is ${this.name}`);
+  }
+
+  const me = new Peroson('Choi');
+  me.sayHi(); // Hi my name is Choi
+``` 
+
+</div>
+</div>
+
 
 <style>
-ol {
-  margin-top: 3rem !important;
-}
-ol li {
-  font-size: 1.3em !important;
-  margin-top: 1.3rem !important;
-}
 p {
   margin: 0.5em !important;
   font-size: 0.9em !important;
@@ -412,83 +442,138 @@ p {
 
 ---
 
-# 즉시 실행 함수
-즉시 실행 함수는 단 한 번만 호출된다.  
-모든 코드를 즉시 실행 함수로 감싸면 모든 변수는 즉시 실행 함수의 지역 변수가 된다.
-
+클래스가 생성한 인스턴스는 프로토타입 체인의 일원이 된다.
 ```javascript
+  class Person {
+    constructor(name) {
+      this.name = name;
+    }
+  }
 
-  (function () {
-    var foo = 10;
-  }());
-  
-  console.log(foo); // ReferenceError: foo is not defined
+  sayHi() {
+    console.log(`Hi my name is ${this.name}`);
+  }
 
-```
+  const me = new Peroson('Choi');
+  me.sayHi(); // Hi my name is Choi
+
+  // me 객체의 프로토타입은 Person.prototype이다.
+  Object.getPrototypeOf(me) === Person.prototype; // true
+  me instanceof Person; // true
+
+  // Person.prototype의 프로토타입은 Object.prototype이다.
+  Object.getPrototypeOf(Person.prototype) === Object.prototype; // true
+  me instanceof Obejct; // true
+
+  // me 객체의 constructor는 Person 클래스다.
+  me.constructor === Person; // true
+``` 
 
 <style>
   .slidev-layout h1 + p {
     opacity: 1;
   }
-</style>
-
----
-
-# 네임스페이스 객체
-전역에 네임스페이스 역할을 담당할 객체를 생성하고 전역 변수처럼 사용하고 싶은 변수를 프로퍼티로 추가하는 방법이다.  
-네임스페이스를 분리해서 식별자 충돌을 방지하는 효과는 있으나 네임스페이스 객체 자체가 전역 변수에 할당되므로 유용하지 않다.
-
-```javascript
-  var MYAPP = {};
-
-  MYAPP.name = "Choi";
-
-  console.log(MYAPP.name); // Choi  
-
-```
-
-```javascript
-  // 계층적 구조 가능
-  var MYAPP = {};
-  
-  MYAPP.person = {
-    name: 'Choi',
-    address: 'Seoul' 
-  };
-
-  console.log(MYAPP.person.name) // Choi
-
-```
-
-<style>
-  .slidev-layout h1 + p {
-    opacity: 1;
+  p {
+    margin: 0.5em !important;
+    font-size: 0.9em !important;
   }
 </style>
 
 ---
 
-# 모듈 패턴
-모듈 패턴은 자바스크립트의 강력한 기능인 <strong>클로저를 기반으로 동작</strong>하고 전역 변수의 억제는 물론 캡슐화까지 구현할 수 있다.  
-모듈 패턴은 전역 네임스페이스의 오염을 막는 기능은 한정적이지만 <strong>정보 은닉을 구현하기 위해 사용</strong>한다.
+# 정적 메서드
+정적 메서드는 인스턴스를 생성하지 않아도 호출할 수 있는 메서드를 말한다.
+<div grid="~ cols-2 gap-10">
+<div>
 
+## 생성자 함수 정적 메서드
+```javascript
+  // 생성자 함수
+  function Person(name) {
+    this.name = name;
+  }
 
-<div class="absolute bottom-9 left-10">
+  // 정적 메서드 
+  Person.sayHi = function () {
+    console.log('Hi!');
+  }
 
-<br>
+  // 정적 메서드 호출
+  Person.sayHi(); // Hi!
+```  
+ 
 
-> '캡슐화'는 객체의 상태를 나타내는 프로퍼티와 프로퍼티를 참조하고 조작할 수 있는 동작인 메서드를 하나로 묶는것을 말한다.  
-캡슐화는 객체의 특정 프로퍼티나 메서드를 감출 목적으로 사용하기도 하는데 이를 정보 은닉이라 한다.
-
-<br>
-
-> 자바스크립트는 public, private, protected 등의 접근 제한자를 제공하지 않는다.
 </div>
+<div>
+
+## 클래스 정적 메서드 
+```javascript
+  class Person {
+    // 생성자
+    constructor(name) {
+      // 인스턴스 생성 및 초기화
+      this.name = name;
+    }
+
+    // 정적 메서드
+    static sayHi() {
+      console.log('Hi');
+    }
+  }
+``` 
+<div class="desc">클래스에서는 메서드에 <strong>static</strong> 키워드를 붙이면 정적 메서드가 된다.</div>
+</div>
+</div>
+
+<style>
+.slidev-layout h1 + p {
+  opacity: 1;
+}
+h2 {
+  color: #b39c36;
+  font-size: 1em !important;
+  margin-top: 1.3rem !important;
+}
+p {
+  font-size: 0.9em !important;
+}
+.desc {
+  font-size: 0.8em !important;
+  margin-top: 1rem !important;
+}
+strong {
+  font-weight: bold;
+  color: #b5794a;
+}
+</style>
+
+---
+
+## 클래스 정적 메서드
+정적 메서드는 클래스에 바인딩된 메서드가 된다.  
+클래스는 함수 객체로 평가되므로 프로퍼티나/메서드를 소유할 수 있고 클래스 정의 이후 인스턴스를 생성하지 않아도 호출할 수 있다.  
+
+정적 메서드는 프로토타입 메서드처럼 인스턴스로 호출하지 않고 클래스로 호출한다.
+```javascript
+  // 정적 메서드는 클래스로 호출한다.
+  // 정적 메서드는 인스턴스 없이도 호출할 수 있다.
+  Person.sayHi(); // Hi
+``` 
+정적 메서드는 인스턴스로 호출할 수 없다.  
+인스턴스의 프로토타입 체인 상에는 클래스가 존재하지 않기 때문에 인스턴스로 클래스의 메서드를 상속받을 수 없다.
+```javascript
+  // 인스턴스 생성
+  const me = new Person('Lee');
+  me.sayHi(); // TypeError: me.sayHi is not a function
+``` 
 
 <style>
   h2 {
     color: #b39c36;
     font-size: 1.5em !important;
+  }
+  p {
+    font-size: 0.9em !important;
   }
   .slidev-layout h1 + p {
     opacity: 1;
@@ -503,58 +588,56 @@ p {
 class: px-20
 ---
 
+## 정적 메서드와 프로토타입 메서드의 차이
+
+1. 정적 메서드와 프로토타입 메서드는 자신이 속해 있는 프로토타입 체인이 다르다.
+2. 정적 메서드는 클래스로 호출하고 프로토타입 메서드는 인스턴스로 호출한다.
+3. 정적 메서드는 인스턴스 프로퍼티를 참조할 수 없지만 프로토타입 메서드는 인스턴스 프로퍼티를 참조할 수 있다.  
+  따라서 인스턴스 프로퍼티를 참조해야 한다면 정적 메서드 대신 프로토타입 메서드를 사용해야 한다.
 <div grid="~ cols-2 gap-4">
 <div>
 
-### 🤔 모듈 패턴 예제  
-
-<div class="pt-5">
-
-#### 자바스크립트에서 퍼블릭, 프라이빗 맴버 만들기
-
-<div v-click="4">
-  <p>외부에 노출하고 싶은 변수나 함수를 객체에 담아 프로퍼티를 퍼블릭 맴버로 만들었다. <br>
-  외부에 노출하고 싶지 않은 변수나 함수는 반환하는 객체에 추가하지 않으면 외부에서 접근할 수 없는 프라이빗 맴버가 된다.</p>
-  <p><strong>클로저</strong>는 반환된 내부함수가 자신이 선언됐을 때의 환경(Lexical environment)인 스코프를 기억하여 자신이 선언됐을 때의 환경(스코프) 밖에서 호출되어도 그 환경(스코프)에 접근할 수 있는 함수이다.<br>클로저는 자신이 생성될 때의 환경을 기억하는 함수.</p>
-</div>
-
-</div>
-</div>
-
-<div>
-
-```javascript  {all|2-16|3-4,18-19|all}
-
-  var Counter = (function () {
-    // private 변수
-    var num = 0;
-
-    // 외부로 공개할 데이터나 메서드를 프로퍼티로 추가한 객체를 반환
-    // public member
-    return {
-      increase() {
-        return ++num;
-      },
-      decrease() {
-        return --num;
-      }
+```javascript
+  class Square {
+    // 정적 메서드
+    static area(width, height) {
+      return width * height;
     }
-  }());
+  }
 
-  // private 변수는 외부로 노출되지 않는다
-  console.log(Counter.num) // undefined
-  
-  console.log(Counter.increase()); // 1
-  console.log(Counter.increase()); // 2
-  console.log(Counter.decrease()); // 1
-  console.log(Counter.decrease()); // 0
+  console.log(Square.area(10, 10)); // 100
+``` 
 
+</div>
+<div>
+ 
+```javascript
+  class Square {
+    // 인스턴스
+    constructor(width, height) {
+      // 인스턴스 프로퍼티 초기화
+      this.width = width;
+      this.height = height;
+    }
 
-```
+    // 프로토타입 메서드
+    area() {
+      return this.width * this.height;
+    }
+  }
+  const square = new Square(10, 10);
+  console.log(square.area()); // 100
+``` 
+
 </div>
 </div>
+
 
 <style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.5em !important;
+  }
   h3 {
     color: #809e41;
     font-size: 1.5em !important;
@@ -562,8 +645,8 @@ class: px-20
   h4 {  
     margin-bottom: 10px;
     font-size: 1em !important;
-  }
-  p {
+  }  
+  p, li {
     font-size: 0.8em !important;
   }
   strong {
@@ -574,26 +657,77 @@ class: px-20
 
 ---
 
-# ES6 모듈
-ES6 모듈은 파일 자체의 독자적인 모듈 스코프를 제공한다. script 테그에 type=”module” 어트리뷰트를 추가하면 로드된 자바스크립트 파일은 모듈로서 동작한다.
+## 프로토타입 메서드와 정적 메서드 내부의 this 바인딩
 
-- mjs 확장자 권장.
-- 구형 브라우저에서는 동작하지 않으며 브라우저의 ES6모듈 기능을 사용하더라도 트랜스파일링이나 번들링이 필요하다.  
+<strong>프로토타입 메서드 내부의 this는</strong> 메서드를 소유한 객체가 아니라 메서드를 호출한 객체, 즉 메서드 이름 앞의 마침표 연산자 앞에 기술한 객체에 바인딩 된다.  
 
+<strong>정적 메서드</strong>는 클래스로 호출해야 하므로 정적 메서드 내부의 <strong>this는</strong> 인스턴스가 아닌 <strong>클래스</strong>를 가리킨다.  
+
+즉, 프로토타입 메서드와 정적 메서드 내부의 this 바인딩이 다르다.   
+따라서 메서드 내부에서 인스턴스 프로퍼티를 참조하려면 this를 사용해야 하며, 이러한 경우 프로토타입 메서드로 정의해야 한다.  
+
+
+```javascript
+  class Square {
+    // 인스턴스
+    constructor(width, height) {
+      this.width = width;
+      this.height = height;
+    }
+
+    // 프로토타입 메서드
+    area() {
+      return this.width * this.height;
+    }
+  }
+  const square = new Square(10, 10);
+  console.log(square.area()); // 100
+``` 
 
 <style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.5em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
   .slidev-layout h1 + p {
     opacity: 1;
   }
-
 </style>
----
-layout: center
-class: text-center
+
 ---
 
-# 15장
-## let, const 키워드와 블록 레벨 스코프
+## 클래스에서 정의한 메서드의 특징
+
+1. function 키워드를 생략한 메서드 축약 표현을 사용한다.
+2. 객체 리터럴과는 다르게 클래스에서 메서드를 정의할 때는 콤마(,)가 필요 없다.
+3. 암묵적으로 strict mode로 실행된다.
+4. for ...in 문이나 Object.keys 메서드 등으로 열거할 수 없다.  
+  즉, 프로퍼티 어트리뷰트[[Enumerable]]의 값이 false다.
+5. 내부 메서드 [[Construct]]를 갖지 않는 non-constructor다. 따라서 new 연산자와 함께 호출할 수 없다.
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.5em !important;
+  }
+  ol {
+    margin-top: 2em;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+</style>
 
 ---
 
