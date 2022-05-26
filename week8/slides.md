@@ -32,14 +32,49 @@ class: text-left
 
 # 클래스와 생성자 함수 차이점
 
-. | 클래스 | 생성자 함수
---|--|--
-new 연산자 | new 연산자 없이 호출하면 에러가 발생 | new 연산자 없이 호출하면 일반 함수로서 호출
-extends, super | 상속을 지원하는 extends와 super 키워드를 제공 | 지원하지 않음
-호이스팅 | 호이스팅이 발생하지 않는 것처럼 동작 | 함수 선언문으로 정의된 생성자 함수는 함수 호이스팅, 함수 표현식으로 정의한 생성자 함수는 변수 호이스팅 발생
-strict mode | 클래스 내의 모든 코드에는 암묵적으로 strict mode가 저장되어 실행되며 strict mode를 해제할 수 없다. | 암묵적으로 strict mode가 지정되지 않는다.
-[[Enumerable]]의 값 | constructor, 프로토타입 메서드, 정적 메서드는 모두 프로퍼티 어트리뷰트 [[Enumerable]]의 값이 false. 열거되지 않는다. | 
+<table class="mt-5">
+  <thead>
+    <tr>
+      <th style="width:20%" class="text-center"></th>
+      <th style="width:40%" class="text-center">클래스</th>
+      <th style="width:40%" class="text-center">생성자 함수</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="">new 연산자</td>
+      <td class="">new 연산자 없이 호출하면 에러가 발생</td>
+      <td class="">new 연산자 없이 호출하면 일반 함수로서 호출</td>
+    </tr>
+    <tr>
+      <td class="">extends, super</td>
+      <td class="">상속을 지원하는 extends와 super 키워드를 제공</td>
+      <td class="">지원하지 않음</td>
+    </tr>
+    <tr>
+      <td class="">호이스팅</td>
+      <td class="">호이스팅이 발생하지 않는 것처럼 동작</td>
+      <td class="">함수 선언문으로 정의된 생성자 함수는 함수 호이스팅<br/>함수 표현식으로 정의한 생성자 함수는 변수 호이스팅 발생</td>
+    </tr>
+    <tr>
+      <td class="">strict mode</td>
+      <td class="">클래스 내의 모든 코드에는 암묵적으로 strict mode가 저장되어 실행되며 strict mode를 해제할 수 없음</td>
+      <td class="">암묵적으로 strict mode가 지정되지 않음</td>
+    </tr>
+    <tr>
+      <td class="">[[Enumerable]]의 값</td>
+      <td class="">constructor, 프로토타입 메서드, 정적 메서드는 모두 프로퍼티 어트리뷰트 [[Enumerable]]의 값이 false. 열거되지 않음</td>
+      <td class=""></td>
+    </tr>
+  </tbody>
+</table>
 
+<style>
+  th, td {
+    font-size: 0.8em;
+    line-height: 1.4;
+  }
+</style>
 
 ---
 class: text-left
@@ -140,7 +175,7 @@ class: px-20
 
 # 인스턴스 생성
 
-클래스는 생성자 함수이며 new 연산자와 함께 호출되어 인스턴스를 생성한다. 반드시 new 연산자와 함께 호출.  
+클래스는 생성자 함수이며 new 연산자와 함께 호출되어 인스턴스를 생성한다. <strong>반드시 new 연산자와 함께 호출.</strong>  
 <span class="desc">함수 - new 연산자 사용 여부에 따라 일반함수 또는 생성자 함수가 된다.</span>
 
 클래스 표현식으로 정의된 클래스의 경우 클래스를 가리키는 식별자를 사용해 인스턴스를 생성해야 한다.  
@@ -385,7 +420,7 @@ strong {
 <div grid="~ cols-2 gap-10">
 <div>
 
-셍성자 함수를 사용하여 인스턴스를 생성하는 경우 프로토타입 메서드를 생성하기 위해서는 다음과 같이 명시적으로 프로토타입에 메서드를 추가해야 한다.
+생성자 함수를 사용하여 인스턴스를 생성하는 경우 프로토타입 메서드를 생성하기 위해서는 다음과 같이 명시적으로 프로토타입에 메서드를 추가해야 한다.
 ```javascript
   // 생성자 함수
   function Person(name) {
@@ -765,7 +800,7 @@ p {
       // 2. this에 바인딩되어 있는 인스턴스를 초기화한다.
       this.name = name;
 
-      // 3. 완선된 인스턴스가 바인딩된 this가 암묵적으로 반환된다. return문 반드시 생략
+      // 3. 완성된 인스턴스가 바인딩된 this가 암묵적으로 반환된다. return문 반드시 생략
     }
   }
 ```
@@ -809,7 +844,7 @@ constructor 내부에서 this에 추가한 프로퍼티는 언제나 클래스�
 ---
  
 ## 접근자 프로퍼티
-접근자 프로퍼티는 자체적으로는 값을 갖지 않고 다른 데이터 프로퍼티의 값을 읽거나 저장할 때 사용하는 접근자 함수로 구성된 프로퍼티다. 
+접근자 프로퍼티는 자체적으로는 값을 갖지 않고 <strong>다른 데이터 프로퍼티의 값을 읽거나 저장할 때 사용</strong>하는 접근자 함수로 구성된 프로퍼티다. 
 
 <div grid="~ cols-2 gap-4">
 <div>
@@ -854,7 +889,7 @@ constructor 내부에서 this에 추가한 프로퍼티는 언제나 클래스�
   console.log(person.fullName); // Hihi Choi
 
   // fullName은 접근자 프로퍼티다.
-  // 접근자 프로퍼티는 get, set, enumeravle, configurable 프로퍼티 어트리뷰트를 갖는다.
+  // 접근자 프로퍼티는 get, set, enumerable, configurable 프로퍼티 어트리뷰트를 갖는다.
   console.log(Object.getOwnPropertyDescriptor(person, 'fullName')); 
   // {enumerable: true, configurable: true, get: ƒ, set: ƒ}
 ``` 
@@ -873,6 +908,10 @@ constructor 내부에서 this에 추가한 프로퍼티는 언제나 클래스�
   .slidev-layout h1 + p {
     opacity: 1;
   }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
 </style>
 
 ---
@@ -880,11 +919,18 @@ constructor 내부에서 this에 추가한 프로퍼티는 언제나 클래스�
 접근자 프로퍼티는 getter 함수와 setter 함수로 구성되어있다.  
 
 - getter  
-`인스턴스 프로퍼티에 접근할 때마다` 프로퍼티 값을 조작하거나 별도의 행위가 필요할 때 사용.  
+<strong>인스턴스 프로퍼티에 접근할 때마다</strong> 프로퍼티 값을 조작하거나 별도의 행위가 필요할 때 사용.  
 반드시 무언가를 반환해야한다.  
 - setter  
-`인스턴스 프로퍼티에 값을 할당할 때마다` 프로퍼티 값을 조작하거나 별도의 행위가 필요할 때 사용.  
+<strong>인스턴스 프로퍼티에 값을 할당할 때마다</strong> 프로퍼티 값을 조작하거나 별도의 행위가 필요할 때 사용.  
 할당해야 할 때 사용하므로 반드시 매개변수가 있어야 한다. 단 하나의 값만 할당받기 때문에 단 하나의 매개변수만 선언할 수 있다. 
+
+<style>
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+</style>
 
 ---
 
@@ -961,7 +1007,7 @@ ol li {
 
 ---
 
-## 클래스 필드 정의 정의 방법
+## 클래스 필드 정의 방법
 
 - this에 클래스 필드를 바인딩해서는 안 된다. this는 클래스의 constructor와 메서드 내에서만 유효하다.
   ```javascript
@@ -1075,8 +1121,11 @@ ol li {
     color: #b39c36;
     font-size: 1.2em !important;
   }
+  ul {
+    margin-top: -1em;
+  }
   p, li {
-    font-size: 0.8em !important;
+    font-size: 0.8rem !important;
   }
   .slidev-layout h1 + p {
     opacity: 1;
@@ -1278,7 +1327,7 @@ private 필드는 반드시 클래스 몸체에 정의해야 한다.
 ---
 
 ## static 필드 정의 제안
-클래스애는 static 키워드를 사용하여 정적 메서드를 정의 할 수 있지만 정적 필드를 정의할 수는 없었다.  
+클래스에는 static 키워드를 사용하여 정적 메서드를 정의 할 수 있지만 정적 필드를 정의할 수는 없었다.  
 하지만 static public 필드, static private 필드, static private 메서드를 정의할 수 있는 새로운 표준 사양이 제안되어있다.  
 <span class="desc">"Class field declarations"가 2021년 1월 TC39 프로세스의 stage3에 제안</span>  
 
@@ -1458,7 +1507,7 @@ extends 키워드 다음에는 클래스뿐만이 아니라 [[Construct]] 내부
   const derived = new Derived();
   console.log(derived); // Derived {}
   console.log(derived instanceof Base1); // true
-  console.log(derived instanceof Base2); // false -> 클래스는 프로퍼티 어트리뷰트[[Enumerable]]의 값이 false
+  console.log(derived instanceof Base2); // false
 ``` 
 
 <style>
@@ -2236,7 +2285,7 @@ String, Number, Array 같은 표준 빌트인 객체도 [[Construct]] 내부 메
 🖐❕ Array.prototype의 메서드 중에서 map, filter와 같이 새로운 배열을 반환하는 메서드가 MyArray 클래스의 인스턴스를 반환한다는 것에 주의하자.
 
 ```javascript
-  console.log(myArray.filter(v => v % 2) instanceof myArray); // true
+  console.log(myArray.filter(v => v % 2) instanceof MyArray); // true
 ``` 
 
 만약 새로운 배열을 반환하는 메서드가 MyArray 클래스의 인스턴스를 반환하지 않고 Array의 인스턴스를 반환하면 MyArray 클래스의 메서드와 메서드 체이닝이 불가능하다.
@@ -2294,7 +2343,7 @@ myArray.filter가 반환하는 인스턴스는 MyArray 클래스가 생성한 �
   const myArray = new MyArray(1, 1, 2, 3);
 
   console.log(myArray.uniq() instanceof MyArray); //false
-  console.log(myArray.average() instanceof MyArray); // true
+  console.log(myArray.average() instanceof Array); // true
 
   // 메서드 체이닝
   // uniq 메서드는 Array 인스턴스를 반환하므로 average 메서드를 호출할 수 없다.
