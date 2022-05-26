@@ -162,12 +162,6 @@ class: px-20
 
 </div>
 
-<div v-click="6" class="pt-4">
-  <strong>undefined</strong>
-  <p>foo 함수 내부에서 선언된 지역 변수 x는 ??? 시점에 이미 선언되었고 undefined 초기화되었다. <br>이처럼 호이스팅은 스코프 단위로 동작한다.</p>
-
-  > 호이스팅이란? 변수 선언이 스코프의 선두로 끌어 올려진 것처럼 동작하는 자바스크립트 고유의 특징
-</div>
 
 <style>
 .slidev-layout h1 + p {
@@ -1331,10 +1325,992 @@ private 필드는 반드시 클래스 몸체에 정의해야 한다.
 
 # 클래스 상속과 생성자 함수 상속
 
+상속에 의한 클래스 확장은 프로토타입 기반 상속과는 다른 개념으로 기존 클래스를 상속받아 새로운 클래스를 확장하여 정의하는 것이다.  
+<strong>코드 재사용 관점에서 매우 유용</strong>
+
+<div grid="~ cols-2 gap-4">
+<div>
+
+```javascript
+  class Animal {
+    constructor(age, weight) {
+      this.age = age;
+      this.weight = weight;
+    }
+    eat() { return 'eat'; }
+    move() { return 'move'; }
+  }
+
+  // 상속을 통해 Animal 클래스를 확장한 Bird 클래스
+  class Bird extends Animal {
+    fly() { return 'fly'; }
+  }
+
+  const bird = new Bird(1, 5);
+``` 
+
+</div>
+<div>
+
+```javascript
+  console.log(bird); // Bird {age: 1, weight: 5}
+  console.log(bird instanceof Bird); // true
+  console.log(bird instanceof Animal); // true
+  console.log(bird.eat()); // eat
+  console.log(bird.move()); // move
+  console.log(bird.fly()); // fly
+``` 
+</div>
+</div>
+
+클래스는 상속을 통해 다른 클래스를 확장할 수 있는 문법인 extends 키워드가 기본적으로 제공된다. 
 <style>
   h2 {
     color: #b39c36;
     font-size: 1.2em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+</style>
+
+---
+
+## extends 키워드
+
+상속을 통해 클래스를 확장하려면 extends 키워드를 사용하여 상속받을 클래스를 정의한다.  
+- 상속을 통해 확장된 클래스 -> 서브클래스/파생클래스/자식클래스
+- 서브클래스에게 상속된 클래스 -> 수퍼클래스/베이스클래스/부모클래스  
+
+```javascript
+  // 수퍼(베이스/부모) 클래스
+  class Base {}
+
+  // 서브(파생/자식) 클래스
+  class Derived extends Base {}
+``` 
+
+<div grid="~ cols-2 gap-6">
+<div>
+
+extends 키워드의 역할은 수퍼클래스와 서브클래스 간의 상속 관계를 설정하는 것이다.  
+
+수퍼클래스와 서브클래스는 인스턴스의 프로토타입 체인뿐 아니라 클래스 간의 프로토타입 체인도 생성한다.  
+
+이를 통해 프로토타입 메서드, 정적 메서드 모두 상속이 가능하다.
+
+</div>
+<div>
+  <img  width="350" alt="클래스와 생성자 함수의 정의 방식 비교" src="https://user-images.githubusercontent.com/44577555/170218055-7c74d5ea-fd82-48a2-883e-984fae36d693.png">
+</div>
+</div>
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+</style>
+
+---
+
+## 동적 상속
+
+extends 키워드 다음에는 클래스뿐만이 아니라 [[Construct]] 내부 메서드를 갖는 함수 객체로 평가될 수 있는 모든 표현식을 사용할 수 있다.  
+이를 통해 동적으로 상속받을 대상을 결정할 수 있다. 
+단, extends 키워드 앞에는 반드시 클래스가 와야 한다. 
+
+```javascript
+  function Base1() {}
+
+  class Base2 {}
+
+  let condition = true;
+
+  // 조건에 따라 동적으로 상속 대상을 결정하는 서브클래스
+  class Derived extends (condition ? Base1 : Base2) {}
+
+  const derived = new Derived();
+  console.log(derived); // Derived {}
+  console.log(derived instanceof Base1); // true
+  console.log(derived instanceof Base2); // false -> 클래스는 프로퍼티 어트리뷰트[[Enumerable]]의 값이 false
+``` 
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+</style>
+
+---
+
+## 서브클래스의 construtor
+
+<div grid="~ cols-2 gap-6">
+<div>
+
+  클래스에서 constructor를 생략하면 클래스에 다음과 같이 비어있는 constructor가 암묵적으로 정의된다.
+
+  ```javascript
+    constructor() {}
+  ``` 
+</div>
+<div>
+
+  서브 클래스에서 constructor를 생략하면 클래스에 다음과 같은 constructor가 암묵적으로 정의된다.  
+  args는 new 연산자와 함께 클래스를 호출할 때 전달한 인수의 리스트다.
+
+  ```javascript
+    constructor(...args) { super(...args); }  
+  ``` 
+</div>
+</div>
+
+super()는 수퍼클래스의 constructor를 호출하여 인스턴스를 생성한다.
+```javascript
+  // 수퍼클래스
+  class Base {} 
+  /** constructor 생략시 암묵적으로 constructor가 정의된다.
+   *  constructor() {}
+  */
+  // 서브클래스
+  class Derived extends Base {}
+  /** constructor 생략시 암묵적으로 constructor가 정의된다.
+   *  constructor(...args) { super(...args); }  
+  */
+  const derived = new Derived();
+  console.log(derived); // Derived {}
+```
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+</style>
+
+---
+
+## super 키워드
+
+super 키워드는 함수처럼 호출할 수도 있고 this와 같이 식별자처럼 참조할 수 있는 특수한 키워드다.  
+
+### super 동작
+- super를 호출하면 수퍼클래스의 constructor를 호출한다.
+- super를 참조하면 수퍼클래스의 메서드를 호출할 수 있다.  
+
+### super 호출
+super를 호출하면 수퍼클래스의 constructor를 호출한다.  
+new 연산자와 함께 서브클래스를 호출하면서 수퍼클래스의 constructor에 전달할 필요가 있는 인수는 서브클래스의 constructor에서 호출하는 super를 통해 전달한다.
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  h3 {
+    margin-top: 1.2em;
+    color: #9C5170;
+    font-size: 1em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+</style>
+
+---
+
+<div grid="~ cols-2 gap-6">
+<div>
+
+```javascript {all|11,17|11-12|3-5}
+  // 수퍼클래스
+  class Base {
+    constructor(a, b) { // 4
+      this.a = a;
+      this.b = b;
+    }
+  }
+
+  // 서브클래스 
+  class Derived extends Base {
+    constructor(a, b, c) { // 2
+      super(a,b); // 3
+      this.c = c;
+    }
+  }
+
+  const derived = new Derived(1, 2, 3); // 1
+  console.log(derived); // Derived {a: 1, b: 2, c: 3}
+```
+
+</div>
+<div>
+
+  1 -> Derived 클래스를 호출하면서 전달한 인수 1, 2, 3은 Derived 클래스의 constructor에 전달
+
+  2 -> 전달받은 인수 1, 2, 3
+
+  3 -> super 호출을 통해 1, 2 전달  
+
+  4 -> 1, 2 전달받음
+
+</div>
+</div>
+
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  h3 {
+    margin-top: 1.2em;
+    color: #9C5170;
+    font-size: 1em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+</style>
+
+---
+
+### super를 호출할 때 주의사항  
+1. 서브 클래스에서 constructor를 생략하지 않는 경우 서브클래스의 constructor에서는 반드시 super를 호출해야 한다.
+2. 서브 클래스의 constructor에서 super를 호출하기 전에는 this를 참조할 수 없다.  
+    ```javascript
+      class Base {}
+
+      class Derived extends Base {
+        constructor() {
+          // Uncaught ReferenceError: Must call super constructor in derived class before accessing 'this' or returning from derived constructor
+          this.a = 1;
+          super();
+        }
+      }
+
+      const derived = new Derived();
+    ``` 
+3. super는 반드시 <strong>서브클래스의 constructor에서만 호출</strong>한다. 서브클래스가 아닌 클래스의 constructor나 함수에서 super를 호출하면 에러가 발생한다.
+    ```javascript
+      class Base {
+        constructor() {
+          super(); // SyntaxError: 'super' keyword unexpected here
+        }
+      }
+    ``` 
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  h3 {
+    margin-top: 1.2em;
+    color: #9C5170;
+    font-size: 1em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+</style>
+
+---
+
+### super 참조
+매서드 내에서 super를 참조하면 수퍼클래스의 메서드를 호출할 수 있다.
+
+1. 서브클래스의 프로토타입 메서드 내에서 super.sayHi는 수퍼클래스의 프로토타입 메서드 sayHi를 가리킨다.  
+    ```javascript
+      // 수퍼클래스
+      class Base {
+        constructor(name) {
+          this.name = name;
+        }
+        sayHi() {
+          return `Hi ${this.name}`;
+        }
+      }
+      // 서브클래스
+      class Derived extends Base {
+        sayHi() {
+          // super.sayHi는 수퍼클래스의 프로토타입 메서드를 가리킨다.
+          return `${super.sayHi()}. how are you doing?`;
+        }
+      }
+
+      const derived = new Derived('Choi');
+      console.log(derived.sayHi());  // Hi Choi. how are you doing?
+    ``` 
+    
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  h3 {
+    margin-top: 1.2em;
+    color: #9C5170;
+    font-size: 1em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+</style>
+
+---
+
+super를 참조하고 있는 메서드가 바인딩되어 있는 객체의 프로토타입을 찾기 위해 메서드는 <strong>내부 슬롯 [[HomeObject]]</strong>를 가지며,  
+<strong>자신을 바인딩하고 있는 객체를 가리킨다.</strong>  
+주의할 것은 ES6의 메서드 축약 표현으로 정의된 함수만이 [[HomeObject]]를 갖는다는 것이다.  
+<strong>super 참조</strong>는 수퍼클래스의 메서드를 참조하기 위해 사용하므로 <strong>서브클래스의 메서드에서 사용</strong>해야 한다.
+
+```javascript
+  // 수퍼클래스
+  class Base {
+    constructor(name) {
+      this.name = name;
+    }
+    sayHi() {
+      return `Hi ${this.name}`;
+    }
+  }
+  // 서브클래스
+  class Derived extends Base {
+    sayHi() {
+      const __super = Object.getPrototypeOf(Derived.prototype); // __super는 Base.prototype을 가리킨다.
+      return `${__super.sayHi.call(this)} how are you doing?`; // Base.prototype.sayHi를 호출할 때 call 매서드를 사용해 this를 전달해야 한다.
+    }
+  }
+
+  const derived = new Derived('Choi');
+  console.log(derived.sayHi());  // Hi Choi. how are you doing?
+``` 
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  h3 {
+    margin-top: 1.2em;
+    color: #9C5170;
+    font-size: 1em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+</style>
+
+---
+
+2. 서브 클래스의 정적 메서드 내에서 super.sayHi는 수퍼클래스의 정적 메서드 sayHi를 가리킨다.
+
+```javascript
+  // 수퍼클래스
+  class Base {
+    static sayHi() {
+      return `Hi`;
+    }
+  }
+
+  // 서브클래스
+  class Derived extends Base {
+    static sayHi() {
+      // super.sayHi는 수퍼클래스의 정적 메서드를 가리킨다.
+      return `${super.sayHi()}. how are you doing?`;
+    }
+  }
+  console.log(derived.sayHi());  // Hi. how are you doing?   
+``` 
+
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  h3 {
+    margin-top: 1.2em;
+    color: #9C5170;
+    font-size: 1em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+</style>
+
+---
+
+## 상속 클래스의 인스턴스 생성 과정
+
+
+<div grid="~ cols-2 gap-6">
+<div>
+
+```javascript
+  // 수퍼클래스
+  class Rectangle {
+    constructor(width, height) {
+      this.width = width;
+      this.height = height;
+    }
+    getArea() {
+      return this.width * this.height;
+    }
+    toString() {
+      return `width = ${this.width}, height = ${this.height}`;
+    }
+  }
+  // 서브 클래스
+  class ColorRectangle extends Rectangle {
+    constructor(width, height, color) {
+      super(width, height);
+      this.color = color;
+    }
+    toString() {
+      return super.toString() + `, color = ${this.color}`;
+    }
+  }
+  const colorRectangle = new ColorRectangle(2, 4, 'red');
+``` 
+
+</div>
+<div>
+
+1. 서브클래스의 super 호출  
+2. 수퍼클래스의 인스턴스 생성과 this 바인딩
+3. 수퍼클래스의 인스턴스 초기화
+4. 서브클래스 constructor로의 복귀와 this 바인딩
+5. 서브클래스의 인스턴스 초기화
+6. 인스턴스 반환
+
+</div>
+</div>
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  h3 {
+    margin-top: 1.2em;
+    color: #9C5170;
+    font-size: 1em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+</style>
+
+---
+
+## 1. 서브클래스의 super 호출  
+클래스를 평가할 때 수퍼 클래스와 서브클래스를 구분하기 위해 "base" 또는 "derived"를 값으로 갖는 내부 슬롯[[ConstructorKind]]를 갖는다.  
+
+<strong>다른 클래스를 상속받지 않는 클래스 -> "base"</strong>  
+<strong>다른 클래스를 상속받는 서브 클래스 -> "derived"</strong>  
+
+이를 통해 수퍼클래스와 서브클래스는 new 연산자와 함께 호출되었을 때의 동작이 구분된다.  
+
+서브클래스가 new 연산자와 함께 호출되면 서브클래스 constructor 내부의 super 키워드가 함수처럼 호출된다.  
+super가 호출되면 수퍼클래스의 constructor가 호출된다.
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  h3 {
+    margin-top: 1.2em;
+    color: #9C5170;
+    font-size: 1em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+</style>
+
+---
+
+## 2. 수퍼클래스의 인스턴스 생성과 this 바인딩
+수퍼클래스의 constructor 내부의 코드가 실행되기 이전에 암묵적으로 빈 객체를 생성  
+암묵적으로 생성된 빈 객체, 즉 인스턴스는 this에 바인딩  
+
+new 연산자와 함께 호출된 함수를 가리키는 new.target은 서브클래스를 가리킨다.  
+따라서 인스턴스는 new.target이 가리키는 서브클래스가 생성한 것으로 처리된다.
+```javascript {all|4-7}
+  // 수퍼클래스
+  class Rectangle {
+    constructor(width, height) {
+      // 암묵적으로 빈 객체, 즉 인스턴스가 생성되고 this에 바인딩된다.
+      console.log(this); // ColorRectangle {}
+      // new 연산자와 함께 호출된 함수, 즉 new.target은 ColorRectangle이다.
+      console.log(new.target); // ColorRectangle
+
+      // 생성된 인스턴스의 프로토타입으로 ColorRectangle.prototype이 설정된다.
+      console.log(Object.getPrototypeOf(this) === ColorRectangle.prototype); // true
+      console.log(this instanceof ColorRectangle); // true
+      console.log(this instanceof Rectangle); // true
+  ...
+``` 
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  h3 {
+    margin-top: 1.2em;
+    color: #9C5170;
+    font-size: 1em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+</style>
+
+---
+
+## 3. 수퍼클래스의 인스턴스 초기화
+this에 바인딩되어 있는 인스턴스에 프로퍼티를 추가하고 constructor가 인수로 전달받은 초기값으로 인스턴스의 프로퍼티를 초기화 한다.  
+```javascript {all|13-18}
+  // 수퍼클래스
+  class Rectangle {
+    constructor(width, height) {
+      // 암묵적으로 빈 객체, 즉 인스턴스가 생성되고 this에 바인딩된다.
+      console.log(this); // ColorRectangle {}
+      // new 연산자와 함께 호출된 함수, 즉 new.target은 ColorRectangle이다.
+      console.log(new.target); // ColorRectangle
+
+      // 생성된 인스턴스의 프로토타입으로 ColorRectangle.prototype이 설정된다.
+      console.log(Object.getPrototypeOf(this) === ColorRectangle.prototype); // true
+      console.log(this instanceof ColorRectangle); // true
+      console.log(this instanceof Rectangle); // true
+
+      // 인스턴스 초기화
+      this.width = width;
+      this.height = height;
+
+      console.log(this); // ColorRectangle {width: 2, height: 4}
+    }
+  ...
+```
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  h3 {
+    margin-top: 1.2em;
+    color: #9C5170;
+    font-size: 1em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+</style>
+
+
+---
+
+## 4. 서브클래스 constructor로의 복귀와 this 바인딩
+super의 호출이 종료되고 제어 흐름이 서브클래스 constructor로 돌아온다.  
+이때 super가 반환한 인스턴스가 this에 바인딩된다.  
+서브클래스는 별도의 인스턴스를 생성하지 않고 super가 반환한 인스턴스를 this에 바인딩하여 그대로 사용한다.  
+```javascript
+  // 서브 클래스
+  class ColorRectangle extends Rectangle {
+    constructor(width, height, color) {
+      super(width, height);
+
+      // super가 반환한 인스턴스가 this에 바인딩된다.
+      console.log(this); // ColorRectangle {width: 2, height: 4}
+    }
+  ...
+``` 
+이처럼 super가 호출되지 않으면 인스턴스가 생성되지 않으며, this 바인딩도 할 수 없다.  
+서브클래스의 constructor에서 super를 호출하기 전에는 this를 참조할 수 없는 이유가 바로 이 때문이다.  
+따라서 <strong>서브클래스 constructor 내부의 인스턴스 초기화는 반드시 super 호출 이후에 처리</strong>되어야 한다.
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  h3 {
+    margin-top: 1.2em;
+    color: #9C5170;
+    font-size: 1em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+</style>
+
+---
+
+## 5. 서브클래스의 인스턴스 초기화
+  super 호출 이후, 서브클래스의 constructor에 기술되어 있는 인스턴스 초기화가 실행된다.  
+  즉, this에 바인딩되어 있는 인스턴스에 프로퍼티를 추가하고 constructor가 인수로 전달받은 초기값으로 인스턴스의 프로퍼티를 초기화한다.
+
+## 6. 인스턴스 반환
+  클래스의 모든 처리가 끝나면 완성된 인스턴스가 바인딩된 this가 암묵적으로 반환된다.
+
+  ```javascript
+    // 서브 클래스
+    class ColorRectangle extends Rectangle {
+      constructor(width, height, color) {
+        super(width, height);
+        // super가 반환한 인스턴스가 this에 바인딩된다.
+        console.log(this); // ColorRectangle {width: 2, height: 4}
+        // 인스턴스 초기화
+        this.color = color;
+      }
+      // 완성된 인스턴스가 바인딩된 this가 암묵적으로 반환된다.
+      console.log(this); // ColorRectangle {width: 2, height: 4, color: "red"}
+    }
+  ```
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  h3 {
+    margin-top: 1.2em;
+    color: #9C5170;
+    font-size: 1em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+</style>
+
+---
+
+## 표준 빌트인 생성자 함수 확장
+extends 키워드 다음에는 클래스뿐만이 아니라 [[Construct]] 내부 메서드를 갖는 함수 객체로 평가될 수 있는 모든 표현식을 사용할 수 있다.  
+String, Number, Array 같은 표준 빌트인 객체도 [[Construct]] 내부 메서드를 갖는 생성자 함수이므로 extends 키워드를 사용하여 확장할 수 있다. 
+```javascript
+  // Array 생성자 함수를 상속받아 확장한 MyArray
+  class MyArray extends Array {
+    // 중복된 배열 요소를 제거하고 반환한다: [1, 1, 2, 3] => [1, 2, 3]
+    uniq() {
+      return this.filter((v, i, self) => self.indexOf(v) === i);
+    }
+    // 모든 배열 요소의 평균을 구한다: [1, 2, 3] => 2
+    average() {
+      return this.reduce((pre, cur) => pre + cur, 0) / this.length;
+    }
+  }
+
+  const myArray = new MyArray(1, 1, 2, 3);
+  console.log(myArray); // MyArray(4) [1, 1, 2, 3]
+
+  // MyArray.prototype.uniq 호출
+  console.log(myArray.uniq()); // MyArray(3) [1, 2, 3]
+  // MyArray.prototype.average 호출
+  console.log(myArray.average()); // 1.75
+``` 
+
+<div style="position:absolute; bottom:50px; right: 60px; width: 400px; font-size: 0.7em; line-height: 1.5; word-break: keep-all;">
+  Array 생성자 함수를 상속받아 확장한 MyArray 클래스가 생성한 인스턴스는 Array.prototype과 MyArray.prototype의 모든 메서드를 사용할 수 있다.
+</div>
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  h3 {
+    margin-top: 1.2em;
+    color: #9C5170;
+    font-size: 1em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+</style>
+
+---
+
+🖐❕ Array.prototype의 메서드 중에서 map, filter와 같이 새로운 배열을 반환하는 메서드가 MyArray 클래스의 인스턴스를 반환한다는 것에 주의하자.
+
+```javascript
+  console.log(myArray.filter(v => v % 2) instanceof myArray); // true
+``` 
+
+만약 새로운 배열을 반환하는 메서드가 MyArray 클래스의 인스턴스를 반환하지 않고 Array의 인스턴스를 반환하면 MyArray 클래스의 메서드와 메서드 체이닝이 불가능하다.
+```javascript
+  // 메서드 체이닝
+  // [1, 1, 2, 3] => [1, 1, 3] => [1, 3] => 2
+  console.log(myArray.filter(v => v % 2).uniq().averge()); // 2 
+```
+
+myArray.filter가 반환하는 인스턴스는 MyArray 클래스가 생성한 인스턴스, 즉 MyArray 타입이다.  
+따라서 myArray.filter가 반환하는 인스턴스로 uniq 메서드를 연이어 호출할 수 있다.
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  h3 {
+    margin-top: 1.2em;
+    color: #9C5170;
+    font-size: 1em !important;
+  }
+  p, li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+</style>
+
+---
+
+만약 MyArray 클래스의 uniq 메서드가 MyArray 클래스가 생성한 인스턴스가 아닌 Array가 생성한 인스턴스를 반환하게 하려면 다음과 같이 <strong>Symbol.species</strong>를 사용하여 정적 접근자 프로퍼티를 추가한다.
+```javascript
+  // Array 생성자 함수를 상속받아 확장한 MyArray
+  class MyArray extends Array {
+    // 모든 메서드가 Array 타입의 인스턴스를 반환하도록 한다.
+    static get [Symbol.species]() {return Array;}
+    uniq() {
+      return this.filter((v, i, self) => self.indexOf(v) === i);
+    }
+    average() {
+      return this.reduce((pre, cur) => pre + cur, 0) / this.length;
+    }
+  }
+
+  const myArray = new MyArray(1, 1, 2, 3);
+
+  console.log(myArray.uniq() instanceof MyArray); //false
+  console.log(myArray.average() instanceof MyArray); // true
+
+  // 메서드 체이닝
+  // uniq 메서드는 Array 인스턴스를 반환하므로 average 메서드를 호출할 수 없다.
+  console.log(myArray.uniq().average());
+  // TypeError: myArray.uniq(...).average is not a function
+```
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.2em !important;
+  }
+  h3 {
+    margin-top: 1.2em;
+    color: #9C5170;
+    font-size: 1em !important;
   }
   p, li {
     font-size: 0.8em !important;
