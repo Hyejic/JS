@@ -1,383 +1,503 @@
 ---
 # try also 'default' to start simple
-theme: seriph
-# random image from a curated Unsplash collection by Anthony
-# like them? see https://unsplash.com/collections/94734566/slidev
-background: https://source.unsplash.com/collection/94734566/1920x1080
-# apply any windi css classes to the current slide
-class: 'text-center'
-# https://sli.dev/custom/highlighters.html
-highlighter: shiki
-# show line numbers in code blocks
-lineNumbers: false
-# some information about the slides, markdown enabled
-info: |
-  ## Slidev Starter Template
-  Presentation slides for developers.
-
-  Learn more at [Sli.dev](https://sli.dev)
-# persist drawings in exports and build
-drawings:
-  persist: false
+theme: apple-basic
+layout: intro-image
+image: https://img.postshare.co.kr/images/2016/10/31101742/tele.jpg
 ---
 
-# Welcome to Slidev
-
-Presentation slides for developers
-
-<div class="pt-12">
-  <span @click="$slidev.nav.next" class="px-2 py-1 rounded cursor-pointer" hover="bg-white bg-opacity-10">
-    Press Space for next page <carbon:arrow-right class="inline"/>
+<div class="absolute top-10">
+  <span class="font-700">
+    2022.05.26
   </span>
 </div>
 
-<div class="abs-br m-6 flex gap-2">
-  <button @click="$slidev.nav.openInEditor()" title="Open in Editor" class="text-xl icon-btn opacity-50 !border-none !hover:text-white">
-    <carbon:edit />
-  </button>
-  <a href="https://github.com/slidevjs/slidev" target="_blank" alt="GitHub"
-    class="text-xl icon-btn opacity-50 !border-none !hover:text-white">
-    <carbon-logo-github />
-  </a>
+<div class="absolute bottom-10 highlight">
+  <h1>자바스크립 스터디 8회차</h1>
+  <p>클로저</p>
 </div>
-
-<!--
-The last comment block of each slide will be treated as slide notes. It will be visible and editable in Presenter Mode along with the slide. [Read more in the docs](https://sli.dev/guide/syntax.html#notes)
--->
+<!-- prettier-ignore -->
 
 ---
 
-# What is Slidev?
+# 클로저란?
 
-Slidev is a slides maker and presenter designed for developers, consist of the following features
-
-- 📝 **Text-based** - focus on the content with Markdown, and then style them later
-- 🎨 **Themable** - theme can be shared and used with npm packages
-- 🧑‍💻 **Developer Friendly** - code highlighting, live coding with autocompletion
-- 🤹 **Interactive** - embedding Vue components to enhance your expressions
-- 🎥 **Recording** - built-in recording and camera view
-- 📤 **Portable** - export into PDF, PNGs, or even a hostable SPA
-- 🛠 **Hackable** - anything possible on a webpage
-
-<br>
-<br>
-
-Read more about [Why Slidev?](https://sli.dev/guide/why)
-
-<!--
-You can have `style` tag in markdown to override the style for the current page.
-Learn more: https://sli.dev/guide/syntax#embedded-styles
--->
+<p class="mt-10">함수와 그 함수가 선언된 렉시컬 환경과의 조합이다...?</p>
+<p class="red">함수가 선언된 렉시컬 환경이란?</p>
 
 <style>
-h1 {
-  background-color: #2B90B6;
-  background-image: linear-gradient(45deg, #4EC5D4 10%, #146b8c 20%);
-  background-size: 100%;
-  -webkit-background-clip: text;
-  -moz-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  -moz-text-fill-color: transparent;
+.red {
+  color: red;
+}
+
+.mt-10 {
+  margin-top: 10px;
 }
 </style>
 
 ---
 
-# Navigation
+# 함수가 선언된 렉시컬 환경
 
-Hover on the bottom-left corner to see the navigation's controls panel, [learn more](https://sli.dev/guide/navigation.html)
+```js
+const x = 1;
 
-### Keyboard Shortcuts
+function outerFunc() {
+  const x = 10;
 
-|     |     |
-| --- | --- |
-| <kbd>right</kbd> / <kbd>space</kbd>| next animation or slide |
-| <kbd>left</kbd>  / <kbd>shift</kbd><kbd>space</kbd> | previous animation or slide |
-| <kbd>up</kbd> | previous slide |
-| <kbd>down</kbd> | next slide |
+  function innerFunc() {
+    console.log(x); // 10
+  }
 
-<!-- https://sli.dev/guide/animations.html#click-animations -->
-<img
-  v-click
-  class="absolute -bottom-9 -left-7 w-80 opacity-50"
-  src="https://sli.dev/assets/arrow-bottom-left.svg"
-/>
-<p v-after class="absolute bottom-23 left-45 opacity-30 transform -rotate-10">Here!</p>
-
----
-layout: image-right
-image: https://source.unsplash.com/collection/94734566/1920x1080
----
-
-# Code
-
-Use code snippets and get the highlighting directly![^1]
-
-```ts {all|2|1-6|9|all}
-interface User {
-  id: number
-  firstName: string
-  lastName: string
-  role: string
+  innerFunc();
 }
 
-function updateUser(id: number, update: User) {
-  const user = getUser(id)
-  const newUser = { ...user, ...update }
-  saveUser(id, newUser)
-}
+outerFunc();
 ```
 
-<arrow v-click="3" x1="400" y1="420" x2="230" y2="330" color="#564" width="3" arrowSize="1" />
+---
 
-[^1]: [Learn More](https://sli.dev/guide/syntax.html#line-highlighting)
+# 함수가 선언된 렉시컬 환경
+
+```js
+const x = 1;
+
+function outerFunc() {
+  const x = 10;
+  innerFunc();
+}
+
+function innerFunc() {
+  console.log(x); // 1
+}
+
+outerFunc();
+```
+
+---
+
+# 렉시컬 스코프
+
+<p class="mt-10">자바스크립트 엔진은 함수를 어디서 호출했는지가 아니라 함수를 어디에 정의했는지에 따라 상위 스코프를 결정한다 <br/> 이것이 렉시컬 스코프다.</p>
+
+```js
+const x = 1;
+
+function foo() {
+  const x = 10;
+  bar();
+}
+
+function bar() {
+  console.log(x);
+}
+
+foo(); // 1
+bar(); // 1
+```
 
 <style>
-.footnotes-sep {
-  @apply mt-20 opacity-10;
-}
-.footnotes {
-  @apply text-sm opacity-75;
-}
-.footnote-backref {
-  display: none;
+.mt-10 {
+  margin-top: 10px;
 }
 </style>
 
 ---
 
-# Components
+# 함수 객체의 내부 슬롯 [[Enviroment]]
 
-<div grid="~ cols-2 gap-4">
-<div>
+<p class="mt-10">함수는 자신이 정의된 내부 슬롯 [[Enviroment]]에 자신이 정의된 환경, 즉 상위 스코프의 참조를 저장한다.</p>
 
-You can use Vue components directly inside your slides.
+```js
+const x = 1;
 
-We have provided a few built-in components like `<Tweet/>` and `<Youtube/>` that you can use directly. And adding your custom components is also super easy.
+function foo() {
+  const x = 10;
 
-```html
-<Counter :count="10" />
+  // 상위 스코프는 함수 정의 환경(위치)에 따라 결정된다.
+  // 함수 호출 위치와 상위 스코프는 아무런 관계가 없다.
+  bar();
+}
+
+// 함수 bar는 자신의 상위 스코프, 즉 전역 렉시컬 환경을 [[Environment]]에 저장하여 기억한다.
+function bar() {
+  console.log(x);
+}
+
+foo(); // ?
+bar(); // ?
 ```
 
-<!-- ./components/Counter.vue -->
-<Counter :count="10" m="t-4" />
+<style>
+.mt-10 {
+  margin-top: 10px;
+}
+.container {
+  display: flex;
+  justify-content:center;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
 
-Check out [the guides](https://sli.dev/builtin/components.html) for more.
 
-</div>
-<div>
+.highlight{
+  font-size: 24px;
+  font-weight: 900;
+  color: red;
+}
+</style>
 
-```html
-<Tweet id="1390115482657726468" />
+---
+
+# 함수 객체의 내부 슬롯 [[Enviroment]]
+
+<img src="/image/img1.png">
+
+---
+
+# 클로저와 렉시컬 환경
+
+```js
+const x = 1;
+
+// ①
+function outer() {
+  const x = 10;
+  const inner = function () {
+    console.log(x);
+  }; // ②
+  return inner;
+}
+
+// outer 함수를 호출하면 중첩 함수 inner를 반환한다.
+// 그리고 outer 함수의 실행 컨텍스트는 실행 컨텍스트 스택에서 팝되어 제거된다.
+const innerFunc = outer(); // ③
+innerFunc(); // ④ 10
 ```
 
-<Tweet id="1390115482657726468" scale="0.65" />
-
-</div>
-</div>
-
-
----
-class: px-20
 ---
 
-# Themes
+# 클로저가 아닌 예
 
-Slidev comes with powerful theming support. Themes can provide styles, layouts, components, or even configurations for tools. Switching between themes by just **one edit** in your frontmatter:
+```js
+<!DOCTYPE html>
+<html>
+<body>
+  <script>
+    function foo() {
+      const x = 1;
+      const y = 2;
 
-<div grid="~ cols-2 gap-2" m="-t-2">
+      // 일반적으로 클로저라고 하지 않는다.
+      function bar() {
+        const z = 3;
 
-```yaml
----
-theme: default
----
+        debugger;
+        // 상위 스코프의 식별자를 참조하지 않는다.
+        console.log(z);
+      }
+
+      return bar;
+    }
+
+    const bar = foo();
+    bar();
+  </script>
+</body>
+</html>
 ```
 
-```yaml
 ---
-theme: seriph
----
+
+# 클로저가 아닌 예
+
+```js
+<!DOCTYPE html>
+<html>
+<body>
+  <script>
+    function foo() {
+      const x = 1;
+
+      // 일반적으로 클로저라고 하지 않는다.
+      // bar 함수는 클로저였지만 곧바로 소멸한다.
+      function bar() {
+        debugger;
+        // 상위 스코프의 식별자를 참조한다.
+        console.log(x);
+      }
+      bar();
+    }
+
+    foo();
+  </script>
+</body>
+</html>
 ```
 
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-default/01.png?raw=true">
-
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-seriph/01.png?raw=true">
-
-</div>
-
-Read more about [How to use a theme](https://sli.dev/themes/use.html) and
-check out the [Awesome Themes Gallery](https://sli.dev/themes/gallery.html).
-
----
-preload: false
 ---
 
-# Animations
+# 클로저 예
 
-Animations are powered by [@vueuse/motion](https://motion.vueuse.org/).
+```js
+<!DOCTYPE html>
+<html>
+<body>
+  <script>
+    function foo() {
+      const x = 1;
+      const y = 2;
 
-```html
-<div
-  v-motion
-  :initial="{ x: -80 }"
-  :enter="{ x: 0 }">
-  Slidev
-</div>
+      // 클로저
+      // 중첩 함수 bar는 외부 함수보다 더 오래 유지되며 상위 스코프의 식별자를 참조한다.
+      function bar() {
+        debugger;
+        console.log(x);
+      }
+      return bar;
+    }
+
+    const bar = foo();
+    bar();
+  </script>
+</body>
+</html>
 ```
 
-<div class="w-60 relative mt-6">
-  <div class="relative w-40 h-40">
-    <img
-      v-motion
-      :initial="{ x: 800, y: -100, scale: 1.5, rotate: -50 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-square.png"
-    />
-    <img
-      v-motion
-      :initial="{ y: 500, x: -100, scale: 2 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-circle.png"
-    />
-    <img
-      v-motion
-      :initial="{ x: 600, y: 400, scale: 2, rotate: 100 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-triangle.png"
-    />
-  </div>
+---
 
-  <div
-    class="text-5xl absolute top-14 left-40 text-[#2B90B6] -z-1"
-    v-motion
-    :initial="{ x: -80, opacity: 0}"
-    :enter="{ x: 0, opacity: 1, transition: { delay: 2000, duration: 1000 } }">
-    Slidev
-  </div>
-</div>
+# 클로저의 활용
 
-<!-- vue script setup scripts can be directly used in markdown, and will only affects current page -->
-<script setup lang="ts">
-const final = {
-  x: 0,
-  y: 0,
-  rotate: 0,
-  scale: 1,
-  transition: {
-    type: 'spring',
-    damping: 10,
-    stiffness: 20,
-    mass: 2
+<p class="mt-10">클로저는 상태를 안전하게 변경하고 유지하기 위해서 사용한다!</p>
+
+```js
+// 카운트 상태 변수
+let num = 0;
+
+// 카운트 상태 변경 함수
+const increase = function () {
+  // 카운트 상태를 1만큼 증가 시킨다.
+  return ++num;
+};
+
+console.log(increase()); // 1
+console.log(increase()); // 2
+console.log(increase()); // 3
+```
+
+<style>
+.mt-10 {
+  margin-top: 10px;
+}
+.container {
+  display: flex;
+  justify-content:center;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+</style>
+
+---
+
+# 클로저의 활용
+
+```js
+// 카운트 상태 변경 함수
+const increase = function () {
+  // 카운트 상태 변수
+  let num = 0;
+
+  // 카운트 상태를 1만큼 증가 시킨다.
+  return ++num;
+};
+
+// 이전 상태를 유지하지 못한다.
+console.log(increase()); // 1
+console.log(increase()); // 1
+console.log(increase()); // 1
+```
+
+---
+
+# 클로저의 활용
+
+```js
+// 카운트 상태 변경 함수
+const increase = (function () {
+  // 카운트 상태 변수
+  let num = 0;
+
+  // 클로저
+  return function () {
+    // 카운트 상태를 1만큼 증가 시킨다.
+    return ++num;
+  };
+})();
+
+console.log(increase()); // 1
+console.log(increase()); // 2
+console.log(increase()); // 3
+```
+
+<p>클로저는 상태가 의도치 않게 변경되지 않도록 안전하게 은닉하고 특정 함수에게만 상태를 변경을 허용하여 상태를 안전하게 변경하고 유지하기 위해 사용한다!</p>
+
+---
+
+# 캡슐화와 정보은닉
+
+```js
+function Person(name, age) {
+  this.name = name; // public
+  let _age = age; // private
+
+  // 인스턴스 메서드
+  this.sayHi = function () {
+    console.log(`Hi! My name is ${this.name}. I am ${_age}.`);
+  };
+}
+
+const me = new Person("Lee", 20);
+me.sayHi(); // Hi! My name is Lee. I am 20.
+console.log(me.name); // Lee
+console.log(me._age); // undefined
+
+const you = new Person("Kim", 30);
+you.sayHi(); // Hi! My name is Kim. I am 30.
+console.log(you.name); // Kim
+console.log(you._age); // undefined
+```
+
+---
+
+# 캡슐화와 정보은닉
+
+```js
+function Person(name, age) {
+  this.name = name; // public
+  let _age = age; // private
+}
+
+// 프로토타입 메서드
+Person.prototype.sayHi = function () {
+  // Person 생성자 함수의 지역 변수 _age를 참조할 수 없다
+  console.log(`Hi! My name is ${this.name}. I am ${_age}.`);
+};
+```
+
+---
+
+```js
+const Person = (function () {
+  let _age = 0; // private
+
+  // 생성자 함수
+  function Person(name, age) {
+    this.name = name; // public
+    _age = age;
   }
-}
-</script>
 
-<div
-  v-motion
-  :initial="{ x:35, y: 40, opacity: 0}"
-  :enter="{ y: 0, opacity: 1, transition: { delay: 3500 } }">
+  // 프로토타입 메서드
+  Person.prototype.sayHi = function () {
+    console.log(`Hi! My name is ${this.name}. I am ${_age}.`);
+  };
 
-[Learn More](https://sli.dev/guide/animations.html#motion)
+  // 생성자 함수를 반환
+  return Person;
+})();
 
-</div>
+const me = new Person("Lee", 20);
+me.sayHi(); // Hi! My name is Lee. I am 20.
+console.log(me.name); // Lee
+console.log(me._age); // undefined
 
----
-
-# LaTeX
-
-LaTeX is supported out-of-box powered by [KaTeX](https://katex.org/).
-
-<br>
-
-Inline $\sqrt{3x-1}+(1+x)^2$
-
-Block
-$$
-\begin{array}{c}
-
-\nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} &
-= \frac{4\pi}{c}\vec{\mathbf{j}}    \nabla \cdot \vec{\mathbf{E}} & = 4 \pi \rho \\
-
-\nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t} & = \vec{\mathbf{0}} \\
-
-\nabla \cdot \vec{\mathbf{B}} & = 0
-
-\end{array}
-$$
-
-<br>
-
-[Learn more](https://sli.dev/guide/syntax#latex)
-
----
-
-# Diagrams
-
-You can create diagrams / graphs from textual descriptions, directly in your Markdown.
-
-<div class="grid grid-cols-3 gap-10 pt-4 -mb-6">
-
-```mermaid {scale: 0.5}
-sequenceDiagram
-    Alice->John: Hello John, how are you?
-    Note over Alice,John: A typical interaction
+const you = new Person("Kim", 30);
+you.sayHi(); // Hi! My name is Kim. I am 30.
+console.log(you.name); // Kim
+console.log(you._age); // undefined
 ```
 
-```mermaid {theme: 'neutral', scale: 0.8}
-graph TD
-B[Text] --> C{Decision}
-C -->|One| D[Result 1]
-C -->|Two| E[Result 2]
-```
-
-```plantuml {scale: 0.7}
-@startuml
-
-package "Some Group" {
-  HTTP - [First Component]
-  [Another Component]
-}
-
-node "Other Groups" {
-  FTP - [Second Component]
-  [First Component] --> FTP
-}
-
-cloud {
-  [Example 1]
-}
-
-
-database "MySql" {
-  folder "This is my folder" {
-    [Folder 3]
-  }
-  frame "Foo" {
-    [Frame 4]
-  }
-}
-
-
-[Another Component] --> [Example 1]
-[Example 1] --> [Folder 3]
-[Folder 3] --> [Frame 4]
-
-@enduml
-```
-
-</div>
-
-[Learn More](https://sli.dev/guide/syntax.html#diagrams)
-
-
----
-layout: center
-class: text-center
 ---
 
-# Learn More
+# 앞선 패턴의 문제점
 
-[Documentations](https://sli.dev) · [GitHub](https://github.com/slidevjs/slidev) · [Showcases](https://sli.dev/showcases.html)
+```js
+const me = new Person("Lee", 20);
+me.sayHi(); // Hi! My name is Lee. I am 20.
+
+const you = new Person("Kim", 30);
+you.sayHi(); // Hi! My name is Kim. I am 30.
+
+// _age 변수 값이 변경된다!
+me.sayHi(); // Hi! My name is Lee. I am 30.
+```
+
+자바스크립트에서는 완전한 정보은닉을 제공하지 않는다!
+
+---
+
+# 자주 발생하는 실수
+
+```js
+var funcs = [];
+
+for (var i = 0; i < 3; i++) {
+  funcs[i] = function () {
+    return i;
+  }; // ①
+}
+
+for (var j = 0; j < funcs.length; j++) {
+  console.log(funcs[j]()); // ②
+}
+```
+
+---
+
+# 자주 발생하는 실수 - 해결 1
+
+```js
+var funcs = [];
+
+for (var i = 0; i < 3; i++) {
+  funcs[i] = (function (id) {
+    // ①
+    return function () {
+      return id;
+    };
+  })(i);
+}
+
+for (var j = 0; j < funcs.length; j++) {
+  console.log(funcs[j]());
+}
+```
+
+---
+
+# 자주 발생하는 실수 - 해결 2
+
+```js
+const funcs = [];
+
+for (let i = 0; i < 3; i++) {
+  funcs[i] = function () {
+    return i;
+  };
+}
+
+for (let i = 0; i < funcs.length; i++) {
+  console.log(funcs[i]()); // 0 1 2
+}
+```
+
+---
+
+# 자주 발생하는 실수 - 해결 3
+
+```js
+// 요소가 3개인 배열을 생성하고 배열의 인덱스를 반환하는 함수를 요소로 추가한다.
+// 배열의 요소로 추가된 함수들은 모두 클로저다.
+const funcs = Array.from(new Array(3), (_, i) => () => i); // (3) [ƒ, ƒ, ƒ]
+
+// 배열의 요소로 추가된 함수 들을 순차적으로 호출한다.
+funcs.forEach((f) => console.log(f())); // 0 1 2
+```
