@@ -801,7 +801,7 @@ strong {
     .then(console.log)
     .catch(console.log) // Error: Error 3
 ```
-세 번째 프로미스가 가장 먼저 rejected 상태가 되므로 세 번쨰 프로미스가 reject한 에러가 catch 메서드로 전달
+세 번째 프로미스가 가장 먼저 rejected 상태가 되므로 세 번째 프로미스가 reject한 에러가 catch 메서드로 전달
 
 Promise.all 메서드는 인수로 전달받은 이터러블의 요소가 프로미스가 아닌 경우 Promise.resolve 메서드를 통해 프로미스로 래핑
 
@@ -986,7 +986,7 @@ Promise.all 메서드와는 다르게 <strong>가장 먼저 fulfilled 상태가 
 ```
 
 fetch 함수는 HTTP 응답을 나타내는 Response 객체를 래핑한 Promise 객체를 반환한다.  
-fetch 함수에 첫 번쨰 인수로 HTTP 요청을 전송할 URL만 전달하면 GET 요청을 전송한다.
+fetch 함수에 첫 번째 인수로 HTTP 요청을 전송할 URL만 전달하면 GET 요청을 전송한다.
 
 ```javascript
   fetch('https://jsonplaceholder.typicode.com/todos/1')
@@ -1081,7 +1081,7 @@ Response.prototype.json 메서드는 Response 객체에서 HTTP 응답 몸체를
 <div>
 
 첫번째 인수로 HTTP 요청을 전송할 URL  
-두번쨰 인수로 HTTP 요청 메서드, HTTP 요청 헤더, 페이로드 등을 설정한 객체를 전달
+두번째 인수로 HTTP 요청 메서드, HTTP 요청 헤더, 페이로드 등을 설정한 객체를 전달
 
 ### GET 
 - 단순히 원격 API에 있는 데이터를 가져올 때 쓰이는 GET 방식의 HTTP 통신
