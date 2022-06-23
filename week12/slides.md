@@ -746,9 +746,9 @@ strong {
 
 # Promise.all
 
-<strong>여러 개의 비동기 처리를 모두 병렬 처리</strong> 할 떄 사용.  
+<strong>여러 개의 비동기 처리를 모두 병렬 처리</strong> 할 때 사용.  
 
-비동기 처리들이 서로 의존하지 않고 개별적으로 수행된다면 비동기 처리를 순차적으로 처리할 필요가 없기 떄문에 promise.all을 사용하여 병렬 처리를 한다.
+비동기 처리들이 서로 의존하지 않고 개별적으로 수행된다면 비동기 처리를 순차적으로 처리할 필요가 없기 때문에 promise.all을 사용하여 병렬 처리를 한다.
 
 ```javascript
   const requestData1 = () => new Promise(resolve => setTimeout(() => resolve(1), 3000));
@@ -1016,8 +1016,10 @@ strong {
 
 Response 객체는 HTTP 응답을 나타내는 다양한 프로퍼티를 제공  
 
-
 Response.prototype.json 메서드는 Response 객체에서 HTTP 응답 몸체를 취득하여 역직렬화한다.
+
+<span class="desc" >* 문자열 => 객체로 변환하며, 이를 역직렬화(deserialize)라고 한다.</span>
+
 ```javascript
   fetch('https://jsonplaceholder.typicode.com/todos/1')
     // response는 HTTP 응답을 나타내는 Response 객체다.
@@ -1028,15 +1030,21 @@ Response.prototype.json 메서드는 Response 객체에서 HTTP 응답 몸체를
     // {userId: 1, id:1, title: }
 ```
 
+<style>
+  .desc {
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
+</style>
 
 ---
 
-## fetch 함수를 사용할 떄는 에러 처리에 주의
+## fetch 함수를 사용할 때는 에러 처리에 주의
 
 ```javascript
   const wrongUrl = 'https://jsonplaceholder.typicode.com/xxx/1';
 
-  // 부적절한 URL이 지정되었기 떄문에 404 not found 에러가 발생한다.
+  // 부적절한 URL이 지정되었기 때문에 404 not found 에러가 발생한다.
   fetch(wrongUrl)
     .then(() => console.log('ok'))
     .catch(() => console.log('error'));
@@ -1045,12 +1053,14 @@ Response.prototype.json 메서드는 Response 객체에서 HTTP 응답 몸체를
 404 Not Found나 500 Internal Server Error와 같은 HTTP 에러가 발생 - 불리언 타입의 ok 상태를 false로 설정한 Response 객체를 resolve  
 오프라인 등의 네트워크 장애나 CORS 에러에 의해 요청이 완료되지 못한 경우 - 프로미스를 reject
 
+<span class="desc">CORS(Cross-Origin Resource Sharing) - CORS 에러는 요청 브라우저에서 다른 도메인(프로토콜, 포트번호)을 가지는 서버로 요청이 갈때 브라우저에서 발생하는 보안정책이다. (서버 정책x)</span>
+
 따라서 fetch 함수를 사용할 때는 fetch 함수가 반환한 프로미스가 resolve한 불리언 타입의 ok 상태를 확인해 명시적으로 에러를 처리할 필요가 있다.
 
 ```javascript
   const wrongUrl = 'https://jsonplaceholder.typicode.com/xxx/1';
 
-  // 부적절한 URL이 지정되었기 떄문에 404 not found 에러가 발생한다.
+  // 부적절한 URL이 지정되었기 때문에 404 not found 에러가 발생한다.
   fetch(wrongUrl)
     .then(response => {
       if(! response.ok)  throw new Error(response.statusText);
@@ -1070,6 +1080,10 @@ Response.prototype.json 메서드는 Response 객체에서 HTTP 응답 몸체를
   }
   .slidev-layout h1 + p {
     opacity: 1;
+  }
+  .desc {
+    font-size: 0.8rem;
+    opacity: 0.7;
   }
 </style>
 
@@ -1170,7 +1184,7 @@ class: px-10
   request.post('https://jsonplaceholder.typicode.com/todos', {
     userId: 1,
     title: 'JavaScript',
-    complated: false
+    completed: false
   }).then(response => {
       if(!response.ok) throw new Error(response.statusText);
       return response.json();
@@ -1178,7 +1192,7 @@ class: px-10
     .then(todos => console.log(todos))
     .catch(err => console.error(err));
 
-  // {userId: 1, title: 'JavaScript', complated: false, id: 201}
+  // {userId: 1, title: 'JavaScript', completed: false, id: 201}
 ```
 
 </div>
@@ -1187,7 +1201,7 @@ class: px-10
 ```javascript
   //3. PATCH 요청
   request.patch('https://jsonplaceholder.typicode.com/todos/1', {
-    complated: true
+    completed: true
   }).then(response => {
       if(!response.ok) throw new Error(response.statusText);
       return response.json();
@@ -1195,7 +1209,7 @@ class: px-10
     .then(todos => console.log(todos))
     .catch(err => console.error(err));
 
-  //{userId: 1, id: 1, title: 'delectus aut autem', completed: false, complated: true}
+  // {userId: 1, id: 1, title: 'delectus aut autem', completed: true}
 
 
 
