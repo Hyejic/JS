@@ -636,6 +636,7 @@ then, catch, finally 후속 처리 메서드는 언제나 프로미스를 반환
   .catch(err => console.error(err));
 ```
 
+<br/>
 
 후속 처리 메서드 | 콜백 함수의 인수 | 후속 처리 메서드의 반환값
 --|--|--
@@ -643,51 +644,6 @@ then | promiseGet 함수가 반환한 프로미스가 resolve한 값 | 콜백 �
 then | 첫 번째 then 메서드가 반환한 프로미스 resolve한 값 | 콜백 함수가 반환한 값(undefined)을 resolve한 값
 catch(에러가 발생하지 않으면 호출되지 않는다) | promiseGet 함수 또는 앞선 후속 처리 메서드가 반환한 프로미스가 reject한 값 | 콜백 함수가 반환한 값(undefined)을 resolve한 프로미스
 
-<div grid="~ cols-2 gap-10">
-<div>
-
-생성자 함수를 사용하여 인스턴스를 생성하는 경우 프로토타입 메서드를 생성하기 위해서는 다음과 같이 명시적으로 프로토타입에 메서드를 추가해야 한다.
-```javascript
-  // 생성자 함수
-  function Person(name) {
-    this.name = name;
-  }
-
-  // ⭐️ 생성자 함수 프로토타입 메서드
-  Person.prototype.sayHi = function() {
-    console.log(`Hi my name is ${this.name}`);
-  }
-
-  const me = new Peroson('Choi');
-  me.sayHi(); // Hi my name is Choi
-```   
-
-</div>
-<div>
-
-클래스 몸체에서 정의한 메서드는 클래스의 prototype 프로퍼티에 메서드를 추가하지 않아도 기본적으로 프로토타입 메서드가 된다.
-```javascript
-  class Person {
-    // 생성자
-    constructor(name) {
-      // 인스턴스 생성 및 초기화
-      this.name = name;
-    }
-  }
-
-  // ⭐️ 클래스 프로토타입 메서드
-  sayHi() {
-    console.log(`Hi my name is ${this.name}`);
-  }
-
-  const me = new Peroson('Choi');
-  me.sayHi(); // Hi my name is Choi
-``` 
-
-</div>
-</div>
-
-
 <style>
 .slidev-layout h1 + p {
   opacity: 1;
@@ -698,10 +654,6 @@ h2 {
   margin-top: 1.3rem !important;
 }
 p {
-  margin: 0.5em !important;
-  font-size: 0.8em !important;
-}
-li {
   margin: 0.5em !important;
   font-size: 0.8em !important;
 }
@@ -709,90 +661,62 @@ strong {
   font-weight: bold;
   color: #b5794a;
 }
+table th,
+table td {
+  font-size: 0.6em !important;
+}
 </style>
 
 ---
+layout: center
+---
 
-클래스가 생성한 인스턴스는 프로토타입 체인의 일원이 된다.
-```javascript
-  class Person {
-    constructor(name) {
-      this.name = name;
-    }
-  }
+# 프로미스의 정적 메서드 
 
-  sayHi() {
-    console.log(`Hi my name is ${this.name}`);
-  }
-
-  const me = new Peroson('Choi');
-  me.sayHi(); // Hi my name is Choi
-
-  // me 객체의 프로토타입은 Person.prototype이다.
-  Object.getPrototypeOf(me) === Person.prototype; // true
-  me instanceof Person; // true
-
-  // Person.prototype의 프로토타입은 Object.prototype이다.
-  Object.getPrototypeOf(Person.prototype) === Object.prototype; // true
-  me instanceof Obejct; // true
-
-  // me 객체의 constructor는 Person 클래스다.
-  me.constructor === Person; // true
-``` 
-
-<style>
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  p {
-    margin: 0.5em !important;
-    font-size: 0.9em !important;
-  }
-</style>
+- Promise.resolve
+- Promise.reject
+- Promise.all
+- Promise.race
+- Promise.allSettled
 
 ---
 
-# 정적 메서드
-정적 메서드는 인스턴스를 생성하지 않아도 호출할 수 있는 메서드를 말한다.
-<div grid="~ cols-2 gap-10">
+# Promise.resolve / Promise.reject
+
+Promise.resolve와 Promise.reject 메서드는 이미 존재하는 값을 래핑하여 프로미스를 생성하기 위해 사용한다.  
+
+<div grid="~ cols-2 gap-10" class="pt-2">
 <div>
 
-## 생성자 함수 정적 메서드
+## Promise.resolve 
+
+Promise.resolve 메서드는 인수로 전달받은 값을 resolve하는 프로미스를 생성한다.
+
 ```javascript
-  // 생성자 함수
-  function Person(name) {
-    this.name = name;
-  }
+  // 배열을 resolve 하는 프로미스를 생성
+  const resolvePromise = Promise.resolve([1, 2, 3]);
+  resolvePromise.then(console.log); // [1, 2, 3]
 
-  // 정적 메서드 
-  Person.sayHi = function () {
-    console.log('Hi!');
-  }
-
-  // 정적 메서드 호출
-  Person.sayHi(); // Hi!
-```  
- 
+  // 위와 동일하게 동작
+  const resolvePromise = new Promise(resolve => resolve([1, 2, 3]));
+  resolvedPromise.then(console.log); // [1, 2, 3]
+```
 
 </div>
 <div>
 
-## 클래스 정적 메서드 
-```javascript
-  class Person {
-    // 생성자
-    constructor(name) {
-      // 인스턴스 생성 및 초기화
-      this.name = name;
-    }
+## Promise.reject
 
-    // 정적 메서드
-    static sayHi() {
-      console.log('Hi');
-    }
-  }
-``` 
-<div class="desc">클래스에서는 메서드에 <strong>static</strong> 키워드를 붙이면 정적 메서드가 된다.</div>
+Promise.reject 메서드는 인수로 전달받은 값을 reject하는 프로미스를 생성한다.
+```javascript
+  // 에러 객체를 reject하는 프로미스를 생성
+  const rejectPromise = Promise.reject(new Error(`Error!`));
+  rejectedPromise.catch(console.log); // Error: Error!
+
+  // 위와 동일하게 동작
+  const rejectedPromise = new Promise((_, reject) => reject(new Error(`Error!`)));
+  rejectedPromise.catch(console.log); // Error: Error!
+```
 </div>
 </div>
 
@@ -803,11 +727,11 @@ strong {
 h2 {
   color: #b39c36;
   font-size: 1em !important;
-  margin-top: 1.3rem !important;
 }
 p {
-  font-size: 0.9em !important;
+  font-size: 0.8em !important;
 }
+
 .desc {
   font-size: 0.8em !important;
   margin-top: 1rem !important;
@@ -820,23 +744,29 @@ strong {
 
 ---
 
-## 클래스 정적 메서드
-정적 메서드는 클래스에 바인딩된 메서드가 된다.  
-클래스는 함수 객체로 평가되므로 프로퍼티나/메서드를 소유할 수 있고 클래스 정의 이후 인스턴스를 생성하지 않아도 호출할 수 있다.  
+# Promise.all
 
-정적 메서드는 프로토타입 메서드처럼 인스턴스로 호출하지 않고 클래스로 호출한다.
+<strong>여러 개의 비동기 처리를 모두 병렬 처리</strong> 할 떄 사용.  
+
+비동기 처리들이 서로 의존하지 않고 개별적으로 수행된다면 비동기 처리를 순차적으로 처리할 필요가 없기 떄문에 promise.all을 사용하여 병렬 처리를 한다.
+
 ```javascript
-  // 정적 메서드는 클래스로 호출한다.
-  // 정적 메서드는 인스턴스 없이도 호출할 수 있다.
-  Person.sayHi(); // Hi
-``` 
-정적 메서드는 인스턴스로 호출할 수 없다.  
-인스턴스의 프로토타입 체인 상에는 클래스가 존재하지 않기 때문에 인스턴스로 클래스의 메서드를 상속받을 수 없다.
-```javascript
-  // 인스턴스 생성
-  const me = new Person('Lee');
-  me.sayHi(); // TypeError: me.sayHi is not a function
-``` 
+  const requestData1 = () => new Promise(resolve => setTimeout(() => resolve(1), 3000));
+  
+  const requestData2 = () => new Promise(resolve => setTimeout(() => resolve(2), 2000));
+  
+  const requestData3 = () => new Promise(resolve => setTimeout(() => resolve(3), 1000));
+
+  // 세 개의 비동기 처리를 병렬로 처리
+  Promise.all([requestData1(), requestData2(), requestData3()])
+    .then(console.log) // [1, 2, 3] 약 3초 소요
+    .catch(console.error);
+```
+
+- 인수로 전달받은 모든 프로미스가 모두 fulfilled 상태가 되면 종료한다.  
+- 처리 순서가 보장
+- 인수로 전달받은 배열의 프로미스가 하나라도 rejected 상태가 되면 즉시 종료
+
 
 <style>
   h2 {
@@ -844,7 +774,10 @@ strong {
     font-size: 1.5em !important;
   }
   p {
-    font-size: 0.9em !important;
+    font-size: 0.8em !important;
+  }
+  li {
+    font-size: 0.8em !important;
   }
   .slidev-layout h1 + p {
     opacity: 1;
@@ -856,67 +789,177 @@ strong {
 </style>
 
 ---
-class: px-20
----
 
-## 정적 메서드와 프로토타입 메서드의 차이
-
-1. 정적 메서드와 프로토타입 메서드는 자신이 속해 있는 프로토타입 체인이 다르다.
-2. 정적 메서드는 클래스로 호출하고 프로토타입 메서드는 인스턴스로 호출한다.
-3. 정적 메서드는 인스턴스 프로퍼티를 참조할 수 없지만 프로토타입 메서드는 인스턴스 프로퍼티를 참조할 수 있다.  
-  따라서 인스턴스 프로퍼티를 참조해야 한다면 정적 메서드 대신 프로토타입 메서드를 사용해야 한다.
-<div grid="~ cols-2 gap-4">
-<div>
+# Promise.all
 
 ```javascript
-  class Square {
-    // 정적 메서드
-    static area(width, height) {
-      return width * height;
-    }
-  }
+  Promise.all([
+    new Promise((_, reject) => setTimeout(() => reject(new Error(`Error 1`)), 3000)),
+    new Promise((_, reject) => setTimeout(() => reject(new Error(`Error 2`)), 2000)),
+    new Promise((_, reject) => setTimeout(() => reject(new Error(`Error 3`)), 1000))
+  ])
+    .then(console.log)
+    .catch(console.log) // Error: Error 3
+```
+세 번째 프로미스가 가장 먼저 rejected 상태가 되므로 세 번쨰 프로미스가 reject한 에러가 catch 메서드로 전달
 
-  console.log(Square.area(10, 10)); // 100
-``` 
+Promise.all 메서드는 인수로 전달받은 이터러블의 요소가 프로미스가 아닌 경우 Promise.resolve 메서드를 통해 프로미스로 래핑
 
-</div>
-<div>
- 
 ```javascript
-  class Square {
-    // 인스턴스
-    constructor(width, height) {
-      // 인스턴스 프로퍼티 초기화
-      this.width = width;
-      this.height = height;
-    }
-
-    // 프로토타입 메서드
-    area() {
-      return this.width * this.height;
-    }
-  }
-  const square = new Square(10, 10);
-  console.log(square.area()); // 100
-``` 
-
-</div>
-</div>
-
+  Promise.all([
+      1, // ->  Promise.resolve(1)
+      2, // ->  Promise.resolve(2)
+      3 // ->  Promise.resolve(3)
+    ])
+    .then(console.log) // [1, 2, 3]
+    .catch(console.log) 
+```
 
 <style>
   h2 {
     color: #b39c36;
     font-size: 1.5em !important;
   }
-  h3 {
-    color: #809e41;
+  p {
+    font-size: 0.8em !important;
+  }
+  li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+</style>
+
+---
+
+# Promise.race
+
+프로미스를 요소로 갖는 배열 등의 이터러블을 인수로 전달받는다. (promise.all과 동일)  
+Promise.all 메서드와는 다르게 <strong>가장 먼저 fulfilled 상태가 된 프로미스의 처리 결과를 resolve하는 새로운 프로미스를 반환</strong>한다.
+
+```javascript
+  Promise.race([
+    new Promise(resolve => setTimeout(() => resolve(1), 3000)), // 1
+    new Promise(resolve => setTimeout(() => resolve(2), 2000)), // 2 
+    new Promise(resolve => setTimeout(() => resolve(3), 1000)) // 3
+  ])
+    .then(console.log) // 3
+    .catch(console.log);
+```
+
+전달된 프로미스가 하나라도 rejected 상태가 되면 에러를 reject하는 새로운 프로미스를 즉시 반환 (promise.all과 동일)
+```javascript
+  Promise.race([
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Error 1')), 3000)),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Error 2')), 2000)),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Error 3')), 1000)) 
+  ])
+    .then(console.log) 
+    .catch(console.log); // Error: Error 3
+```
+
+<style>
+  h2 {
+    color: #b39c36;
     font-size: 1.5em !important;
   }
-  h4 {  
-    margin-bottom: 10px;
+  p {
+    font-size: 0.8em !important;
+  }
+  li {
+    font-size: 0.8em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+</style>
+
+---
+
+# Promise.allSettled
+
+프로미스를 요소로 갖는 배열 등의 이터러블을 인수로 전달받는다. (promise.all, Promise.race와 동일)  
+<strong>전달받은 프로미스가 모두 settled 상태가 되면</strong> 처리 결과를 배열로 반환한다. (settled - fulfilled 또는 rejected 상태)
+
+<span class="desc">ES11에 도입된 Promise.allSettled 메서드는 IE를 제외한 대부분의 모던 브라우저에서 지원</span>
+
+```javascript
+  Promise.allSettled([
+    new Promise(resolve => setTimeout(() => resolve(1), 2000)),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Error!')), 1000))
+  ]).then(console.log);
+```
+<img width="350" alt="image" src="https://user-images.githubusercontent.com/44577555/174974616-9943d924-98b4-4f9e-b759-be6f43430113.png">
+
+- 프로미스가 fulfilled 상태인 경우 비동기 처리 상태를 나타내는 status 프로퍼티와 처리 결과를 나타내는 value 프로퍼티를 갖는다.
+- 프로미스가 rejected 상태인 경우 비동기 처리 상태를 나타내는 status 프로퍼티와 에러를 나타내는 reason 프로퍼티를 갖는다.
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1.5em !important;
+  }
+  p {
+    font-size: 0.8em !important;
+  }
+  ul {
+    padding-top: 20px;
+  }
+  li {
+    font-size: 0.6em !important;
+  }
+  img {
+    padding-top: 20px;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+  strong {
+    font-weight: bold;
+    color: #b5794a;
+  }
+  .desc {
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
+</style>
+
+---
+
+# 마이크로태스크 큐
+
+```javascript
+  setTimeout(() => console.log(1), 0);
+
+  Promise.resolve()
+  .then(() => console.log(2))
+  .then(() => console.log(3));
+```
+
+2 -> 3 -> 1의 순으로 출력  
+프로미스의 후속 처리 메서드의 콜백 함수는 태스크 큐가 아니라 마이크로태스크 큐에 저장되기 때문.
+
+## 마이크로태스크 큐, 태스크 큐는 별도의 큐
+마이크로태스크 큐 - 프로미스의 후속처리 메서드의 콜백 함수가 일시 저장  
+태스크 큐 - 비동기 함수의 콜백 함수나 이벤트 핸들러가 일시 저장된다.  
+
+콜백 함수나 이벤트 핸들러를 일시 저장한다는 점에서 태스크 큐와 동일하지만 <strong>마이크로태스크 큐는 태스크 큐보다 우선순위가 높다.</strong>
+
+
+<style>
+  h2 {
+    color: #b39c36;
     font-size: 1em !important;
-  }  
+  }
   p, li {
     font-size: 0.8em !important;
   }
@@ -924,96 +967,31 @@ class: px-20
     font-weight: bold;
     color: #b5794a;
   }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
 </style>
 
 ---
 
-## 프로토타입 메서드와 정적 메서드 내부의 this 바인딩
+# fetch
 
-<strong>프로토타입 메서드 내부의 this는</strong> 메서드를 소유한 객체가 아니라 메서드를 호출한 객체, 즉 메서드 이름 앞의 마침표 연산자 앞에 기술한 객체에 바인딩 된다.  
-
-<strong>정적 메서드</strong>는 클래스로 호출해야 하므로 정적 메서드 내부의 <strong>this는</strong> 인스턴스가 아닌 <strong>클래스</strong>를 가리킨다.  
-
-즉, 프로토타입 메서드와 정적 메서드 내부의 this 바인딩이 다르다.   
-따라서 메서드 내부에서 인스턴스 프로퍼티를 참조하려면 this를 사용해야 하며, 이러한 경우 프로토타입 메서드로 정의해야 한다.  
+- XMLHttpRequest 객체와 마찬가지로<strong> HTTP 요청 전송 기능을 제공하는 클라이언트 사이드 Web API</strong>다. 
+- XMLHttpRequest 객체보다 사용법이 간단하고 프로미스를 지원하기 때문에 비동기 처리를 위한 <strong>콜백 패턴의 단점에서 자유롭다.</strong>
+- HTTP 요청을 전송할 URL과 HTTP 요청 메서드, HTTP 요청 헤더, 페이로드 등을 설정한 객체를 전달한다.
 
 
 ```javascript
-  class Square {
-    // 인스턴스
-    constructor(width, height) {
-      this.width = width;
-      this.height = height;
-    }
+  const promise = fetch(url, [, options])
+```
 
-    // 프로토타입 메서드
-    area() {
-      return this.width * this.height;
-    }
-  }
-  const square = new Square(10, 10);
-  console.log(square.area()); // 100
-``` 
+fetch 함수는 HTTP 응답을 나타내는 Response 객체를 래핑한 Promise 객체를 반환한다.  
+fetch 함수에 첫 번쨰 인수로 HTTP 요청을 전송할 URL만 전달하면 GET 요청을 전송한다.
 
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.5em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-</style>
-
----
-
-## 클래스에서 정의한 메서드의 특징
-
-1. function 키워드를 생략한 메서드 축약 표현을 사용한다.
-2. 객체 리터럴과는 다르게 클래스에서 메서드를 정의할 때는 콤마(,)가 필요 없다.
-3. 암묵적으로 strict mode로 실행된다.
-4. for ...in 문이나 Object.keys 메서드 등으로 열거할 수 없다.  
-  즉, 프로퍼티 어트리뷰트[[Enumerable]]의 값이 false다.
-5. 내부 메서드 [[Construct]]를 갖지 않는 non-constructor다. 따라서 new 연산자와 함께 호출할 수 없다.
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.5em !important;
-  }
-  ol {
-    margin-top: 2em;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-</style>
-
----
-
-# 클래스의 인스턴스 생성 과정
-
-1. 인스턴스 생성과 this 바인딩  
-new 연산자와 함께 클래스를 호출하면 constructor의 내부 코드가 실행되기에 앞서 암묵적으로 빈 객체가 생성된다.  
-  -> 클래스가 생성한 인스턴스  
-인스턴스의 프로토타입으로 클래스의 prototype 프로퍼티가 가리키는 객체가 설정된다.  
-빈객체, 즉 인스턴스는 this에 바인딩된다. 따라서 constructor 내부의 this는 클래스가 생성한 인스턴스를 가리킨다.
-2. 인스턴스 초기화
-constructor의 내부 코드가 실행되어 this에 바인딩되어 있는 인스턴스를 초기화한다.  
-즉, this에 바인딩 되어 있는 인스턴스에 프로퍼티를 추가하고 constructor가 인수로 전달받은 초기값으로 인스턴스의 프로퍼티 값을 초기화한다. 만약 constructor가 생략 되었다면 이 과정도 생략된다.
-3. 인스턴스의 반환
-클래스의 모든처리가 끝나면 완성된 인스턴스가 바인딩된 this가 암묵적으로 반환된다.
+```javascript
+  fetch('https://jsonplaceholder.typicode.com/todos/1')
+    .then(response => console.log(response));
+```
 
 <style>
 ol {
@@ -1023,60 +1001,72 @@ ol li {
   font-size: 1em !important;
   margin-top: 1.3rem !important;
 }
-p {
-  margin: 0.5em !important;
+p, li {
   font-size: 0.8em !important;
+  line-height: 2rem !important;
+}
+strong {
+  font-weight: bold;
+  color: #b5794a;
 }
 </style>
 
 ---
 
+
+Response 객체는 HTTP 응답을 나타내는 다양한 프로퍼티를 제공  
+
+
+Response.prototype.json 메서드는 Response 객체에서 HTTP 응답 몸체를 취득하여 역직렬화한다.
 ```javascript
-  class Person {
-    // 생성자
-    constructor(name) {
-      // 1. 암묵적으로 인스턴스가 생성되고 this에 바인딩된다.
-      console.log(this); // Person {}
-      console.log(Object.getPrototypeOf(this) === Person.prototype); // true
-
-      // 2. this에 바인딩되어 있는 인스턴스를 초기화한다.
-      this.name = name;
-
-      // 3. 완성된 인스턴스가 바인딩된 this가 암묵적으로 반환된다. return문 반드시 생략
-    }
-  }
+  fetch('https://jsonplaceholder.typicode.com/todos/1')
+    // response는 HTTP 응답을 나타내는 Response 객체다.
+    // json 메서드를 사용하여 Response 객체에서 HTTP 응답 몸체를 취득하여 역직렬화한다.
+    .then(response => response.json())
+    // json은 역질렬화된 HTTP 응답 몸체다.
+    .then(json => console.log(json));
+    // {userId: 1, id:1, title: }
 ```
+
 
 ---
 
-# 프로퍼티
-
-## 인스턴스 프로퍼티
-인스턴스 프로퍼티는 constructor 내부에서 정의해야 한다.
+## fetch 함수를 사용할 떄는 에러 처리에 주의
 
 ```javascript
-  class Person {
-    constructor(name) {
-      // 인스턴스 프로퍼티
-      this.name = name; // name 프로퍼티는 public하다.
-    }
-  }
+  const wrongUrl = 'https://jsonplaceholder.typicode.com/xxx/1';
 
-  const me = new Person('Choi');
-  console.log(me); // Person {name: "Choi"}
-  // name은 public하다.
-  console.log(me.name); // Choi
-``` 
-constructor 내부에서 this에 추가한 프로퍼티는 언제나 클래스가 생성한 인스턴스의 프로퍼티가 된다.
+  // 부적절한 URL이 지정되었기 떄문에 404 not found 에러가 발생한다.
+  fetch(wrongUrl)
+    .then(() => console.log('ok'))
+    .catch(() => console.log('error'));
+```
 
+404 Not Found나 500 Internal Server Error와 같은 HTTP 에러가 발생 - 불리언 타입의 ok 상태를 false로 설정한 Response 객체를 resolve  
+오프라인 등의 네트워크 장애나 CORS 에러에 의해 요청이 완료되지 못한 경우 - 프로미스를 reject
+
+따라서 fetch 함수를 사용할 때는 fetch 함수가 반환한 프로미스가 resolve한 불리언 타입의 ok 상태를 확인해 명시적으로 에러를 처리할 필요가 있다.
+
+```javascript
+  const wrongUrl = 'https://jsonplaceholder.typicode.com/xxx/1';
+
+  // 부적절한 URL이 지정되었기 떄문에 404 not found 에러가 발생한다.
+  fetch(wrongUrl)
+    .then(response => {
+      if(! response.ok)  throw new Error(response.statusText);
+      return response.json();
+    })
+    .then(todo => console.log(todo))
+    .catch(err => console.log(err));
+```
 
 <style>
   h2 {
     color: #b39c36;
-    font-size: 1.5em !important;
+    font-size: 1em !important;
   }
   p, li {
-    font-size: 0.8em !important;
+    font-size: 0.7em !important;
   }
   .slidev-layout h1 + p {
     opacity: 1;
@@ -1084,1540 +1074,145 @@ constructor 내부에서 this에 추가한 프로퍼티는 언제나 클래스�
 </style>
 
 ---
- 
-## 접근자 프로퍼티
-접근자 프로퍼티는 자체적으로는 값을 갖지 않고 <strong>다른 데이터 프로퍼티의 값을 읽거나 저장할 때 사용</strong>하는 접근자 함수로 구성된 프로퍼티다. 
 
-<div grid="~ cols-2 gap-4">
+## fetch 함수를 통해 HTTP 요청을 전송
+
+<div grid="~ cols-2 gap-10" class="pt-2">
+<div>
+
+첫번째 인수로 HTTP 요청을 전송할 URL  
+두번쨰 인수로 HTTP 요청 메서드, HTTP 요청 헤더, 페이로드 등을 설정한 객체를 전달
+
+### GET 
+- 단순히 원격 API에 있는 데이터를 가져올 때 쓰이는 GET 방식의 HTTP 통신
+
+### POST 
+- 원격 API에서 관리하고 있는 데이터를 생성해야 한다면 요청 전문을 포함할 수 있는 POST 방식의 HTTP 통신이 필요
+
+### PATCH 
+- 원격 API에서 관리하고 있는 데이터를 갱신할 때 자주 쓰임
+
+### DELETE 
+- 원격 API에서 관리하는 데이터의 수정과 삭제를 위해서 DELETE 방식의 HTTP 호출을 해야할 때 필요
+
+</div>
 <div>
 
 ```javascript
-  class Person {
-    constructor(firstName, lastName) {
-      this.firstName = firstName;
-      this.lastName = lastName;
-    }
-    // fullName은 접근자 함수로 구성된 접근자 프로퍼티다.
-    // getter 함수
-    get fullName() {
-      return `${this.firstName} ${this.lastName}`;
+  const request = {
+    get(url) {
+      return fetch(url);
     },
-    // setter 함수
-    set fullName(name) {
-      // 배열 디스트럭처링 할당
-      [this.firstName, this.lastName] = name.split(' ');
+    post(url, payload) {
+      return fetch(url, {
+        method: 'POST',
+        headers: {'content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+    },
+    patch(url, payload) {
+      return fetch(url, {
+        method: 'PATCH',
+        headers: {'content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+    },
+    delete(url) {
+      return fetch(url, {method: 'DELETE'});
     }
+  };
+
+```
+
+</div>
+</div>
+
+<style>
+  h2 {
+    color: #b39c36;
+    font-size: 1em !important;
   }
+  h3 {
+    color: limegreen;
+    font-size: 0.8em !important;
+    opacity: 0.8;
+  }
+  p, li {
+    font-size: 0.7em !important;
+  }
+  .slidev-layout h1 + p {
+    opacity: 1;
+  }
+</style>
+
+---
+class: px-10
+---
+
+
+<div grid="~ cols-2 gap-10" class="pt-2">
+<div>
+
+```javascript
+  // 1. GET 요청
+  request.get('https://jsonplaceholder.typicode.com/todos/1')
+    .then(response => {
+      if(!response.ok) throw new Error(response.statusText);
+      return response.json();
+    })
+    .then(todos => console.log(todos))
+    .catch(err => console.error(err));
+
+  // {userId: 1, id: 1, title: 'delectus aut autem', completed: false}
+
+
+  // 2. POST 요청
+  request.post('https://jsonplaceholder.typicode.com/todos', {
+    userId: 1,
+    title: 'JavaScript',
+    complated: false
+  }).then(response => {
+      if(!response.ok) throw new Error(response.statusText);
+      return response.json();
+    })
+    .then(todos => console.log(todos))
+    .catch(err => console.error(err));
+
+  // {userId: 1, title: 'JavaScript', complated: false, id: 201}
+```
+
+</div>
+<div>
+
+```javascript
+  //3. PATCH 요청
+  request.patch('https://jsonplaceholder.typicode.com/todos/1', {
+    complated: true
+  }).then(response => {
+      if(!response.ok) throw new Error(response.statusText);
+      return response.json();
+    })
+    .then(todos => console.log(todos))
+    .catch(err => console.error(err));
+
+  //{userId: 1, id: 1, title: 'delectus aut autem', completed: false, complated: true}
+
+
+
+  // 4. DELETE 요청
+  request.delete('https://jsonplaceholder.typicode.com/todos/1')
+    .then(response => {
+      if(!response.ok) throw new Error(response.statusText);
+      return response.json();
+    })
+    .then(todos => console.log(todos))
+    .catch(err => console.error(err));
   
-  const me = new Person('Hyeji', 'Choi');
-``` 
-
-</div>
-<div>
-
-```javascript
-  // 데이터 프로퍼티를 통한 프로퍼티 값의 참조.
-  console.log(`${person.firstName} ${person.lastName}`); 
-  // Hyeji Choi
-
-  // 접근자 프로퍼티를 통한 프로퍼티 값의 저장
-  // 접근자 프로퍼티 fullName에 값을 저장하면 setter함수가 호출된다.
-  person.fullName = `Hihi Choi`;
-  console.log(person); 
-  // {firstName: 'Hihi', lastName: 'Choi'}
-
-  // 접근자 프로퍼티를 통한 프로퍼티 값의 참조
-  // 접근자 프로퍼티 fullName에 접근하면 getter 함수가 호출된다.
-  console.log(person.fullName); // Hihi Choi
-
-  // fullName은 접근자 프로퍼티다.
-  // 접근자 프로퍼티는 get, set, enumerable, configurable 프로퍼티 어트리뷰트를 갖는다.
-  console.log(Object.getOwnPropertyDescriptor(person, 'fullName')); 
-  // {enumerable: true, configurable: true, get: ƒ, set: ƒ}
-``` 
-
-</div>
-</div>
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.5em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-</style>
-
----
-
-접근자 프로퍼티는 getter 함수와 setter 함수로 구성되어있다.  
-
-- getter  
-<strong>인스턴스 프로퍼티에 접근할 때마다</strong> 프로퍼티 값을 조작하거나 별도의 행위가 필요할 때 사용.  
-반드시 무언가를 반환해야한다.  
-- setter  
-<strong>인스턴스 프로퍼티에 값을 할당할 때마다</strong> 프로퍼티 값을 조작하거나 별도의 행위가 필요할 때 사용.  
-할당해야 할 때 사용하므로 반드시 매개변수가 있어야 한다. 단 하나의 값만 할당받기 때문에 단 하나의 매개변수만 선언할 수 있다. 
-
-<style>
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-</style>
-
----
-
-## 클래스 필드 정의 제안
-클래스 필드는 클래스 기반 객체지향 언어에서 클래스가 생성할 인스턴스의 프로퍼티를 가리키는 용어다.  
-자바의 클래스 필드는 마치 클래스 내부에서 변수처럼 사용된다.  
-
-```java
-  // 자바의 클래스 정의
-  public class Person {
-    // 1. 클래스 필드 정의
-    // 클래스 필드는 클래스 몸체에 this 없이 선언해야 한다.
-    private String firstName = "";
-    private String lastName = "";
-
-    // 생성자
-    Person(String firstName, String lastName) {
-      // 3. this는 언제나 클래스가 생성할 인스턴스를 가리킨다.
-      this.firstName = firstName;
-      this.lastName = lastName;
-    }
-
-    public String getFullName() {
-      // 2. 클래스 필드 참조
-      // this 없이도 클래스 필드를 참조할 수 있다.
-      return firstName + " " + lastName;
-    }
-  }
-``` 
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.5em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-</style>
-
----
-
-자바스크립트의 클래스 몸체에는 메서드만 선언할 수 있다.  
-따라서 클래스 몸체에서 자바와 유사하게 클래스 필드를 선언하면 문법에러가 발생한다.  
-하지만 최신 브라우저 또는 최신 Node.js에서 실행하면 문법 에러가 발생하지 않고 정상 동작한다.  
-<span class="desc">"Class field declarations"가 2021년 1월 TC39 프로세스의 stage3에 제안</span>  
-또는 Babel과 같은 build 시스템을 사용한다면 기능을 사용할 수 있다.
-
-```javascript
-  class Person {
-    // 클래스 필드 정의
-    name = 'Choi';
-  }
-  const me = new Person('Choi');
-  console.log(me); // Person {name: 'Choi'}
-```
-
-<style>
-ol {
-  margin-top: 3rem !important;
-}
-ol li {
-  font-size: 1.3em !important;
-  margin-top: 1.3rem !important;
-}
-.desc {
-  opacity: 0.5;
-  font-size: 0.8em;
-}
-</style>
-
----
-
-## 클래스 필드 정의 방법
-
-- this에 클래스 필드를 바인딩해서는 안 된다. this는 클래스의 constructor와 메서드 내에서만 유효하다.
-  ```javascript
-    class Person {
-      // this에 클래스 필드를 바인딩해서는 안 된다.
-      this.name = ''; // Uncaught SyntaxError: Unexpected token '.'
-    }
-  ``` 
-- 클래스 필드를 참조하는 경우 자바스크립트에서는 this를 반드시 사용해야 한다.
-  ```javascript
-    class Person {
-      // 클래스 필드
-      name = 'Choi';
-      
-      constructor() {
-        console.log(name); // 에러 발생 안됨. console 값 출력 안됨.
-      }
-    }
-
-    new Person();
-  ``` 
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.5em !important;
-  }
-  ul {
-    margin-top: 1em;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-</style>
-
----
-
-- 클래스 필드에 초기값을 할당하지 않으면 undefined를 갖는다.
-  ```javascript
-    class Person {
-      // 클래스 필드 초기화 하지 않으면 undefined를 갖는다.
-      name;
-    }
-
-    const me = new Person();
-    console.log(me); // Person {name: undefined}
-  ``` 
-- 인스턴스를 생성할 때 외부의 초기값으로 클래스 필드를 초기화해야 할 필요가 있다면 constructor에서 클래스 필드를 초기화해야 한다.
-  ```javascript
-    class Person {
-      name;
-
-      constructor(name) {
-        // 클래스 필드 초기화
-        this.name = name;
-      }
-    }
-    
-    const me = new Person('Choi');
-    console.log(me); // Person {name: 'Choi'}
-  ``` 
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.5em !important;
-  }
-  ul {
-    margin-top: 1em;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-</style>
-
----
-
-- 함수는 일급 객체 이므로 함수를 클래스 필드에 할당할 수 있다. 따라서 클래스 필드를 통해 메서드를 정의할 수도 있다.
-  ```javascript
-    class Person {
-      // 클래스 필드에 문자열을 할당
-      name = 'Choi';
-
-      // 클래스 필드에 함수 할당
-      getName = function(){
-        return this.name;
-      }
-      // 화살표 함수도 가능
-      // getName = () => this.name;
-    }
-    
-    const me = new Person();
-    console.log(me); // Person {name: 'Choi', getName: ƒ}
-    console.log(me.getName()); // Choi
-  ``` 
-  이처럼 클래스 필드에 함수를 할당하는 경우, 이 함수는 프로토타입 메서드가 아닌 인스턴스 메서드가 된다. 클래스 필드에 함수를 할당하는 것은 권장하지 않는다.
-
-  ### 클래스 필드 정의 제안으로 인스턴스 프로퍼티 정의하는 방법 두 가지
-  1. 외부 초기값으로 클래스 필드를 <strong>초기화할 필요가 있다면</strong> - constructor에서 인스턴스 프로퍼티를 정의하는 기존 방식 사용.
-  2. 외부 초기값으로 클래스 필드를 <strong>초기화할 필요가 없다면</strong> - 기존의 constructor에서 인스턴스 프로퍼티를 정의하는 방식과 클래스 필드 정의 제안 모두 사용 가능.
-
-
-<style>
-  h3 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  ul {
-    margin-top: -1em;
-  }
-  p, li {
-    font-size: 0.8rem !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-</style>
-
----
-
-## private 필드 정의 제안
-자바스크립트는 캡슐화를 완전하게 지원하지 않는다.  
-ES6의 클래스도 생성자 함수와 마찬가지로 private, public, protected 키워드와 같은 접근 제한자를 지원하지 않는다.  
-
-따라서 인스턴스 프로퍼티는 인스턴스를 통해 클래스 외부에서 언제나 참조할 수 있는 pubilc이다.  
-클래스 필드 정의 제안을 사용하더라도 클래스 필드는 public하기 때문에 외부에 그대로 노출된다.
-
-<div grid="~ cols-2 gap-4">
-<div>
-
-  ```javascript
-    class Person {
-      constructor(name) {
-        // 인스턴스 프로퍼티는 기본적으로 public하다.
-        this.name = name; 
-      }
-    }
-
-    const me = new Person('Choi');
-    console.log(me.name); // Choi
-  ``` 
-
-</div>
-<div>
-
-```javascript
-  class Person {
-    // 클래스 필드도 기본적으로 public하다.
-    name = 'Choi'; 
-  }
-
-  // 인스턴스 생성
-  const me = new Person();
-  console.log(me.name); // Choi
-``` 
-
-</div>
-</div>
-
-
-다행히도 TC39 프로세서의 stage 3에는 private 필드를 정의할 수 있는 새로운 표준 사양이 제안되어 있다. 표준 사양으로 승급이 확실시되는 이 제안도 최신 브라우저와 최신 Node.js에 이미 구현되어 있다.  
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-</style>
-
----
-
-## private 필드 정의 방법
- 
-private 필드의 선두에는 #을 붙여준다.  
-private 필드를 참조할 때도 #을 붙여주어야 한다.  
-
-```javascript
-  class Person {
-    // private 필드 정의
-    #name = '';
-    constructor(name) {
-      // private 필드 참조
-      this.#name = name;
-    }
-  }
-
-  const me = new Person('Choi');
-
-  // private 필드 #name은 클래스 외부에서 참조할 수 없다.
-  console.log(me.#name);
-  // Uncaught SyntaxError: Private field '#name' must be declared in an enclosing class
-``` 
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-</style>
-
----
-
-
-<div grid="~ cols-2 gap-4">
-<div style="width:400px">
-
-public 필드는 어디서든 참조할 수 있지만  
-private 필드는 클래스 내부에서만 참조할 수 있다.
-<table class="mt-5">
-  <thead>
-    <tr>
-      <th style="width:40%" class="text-center">접근 가능성</th>
-      <th style="width:30%" class="text-center">public</th>
-      <th style="width:30%" class="text-center">private</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="text-center">클래스 내부</td>
-      <td class="text-center">o</td>
-      <td class="text-center">o</td>
-    </tr>
-    <tr>
-      <td class="text-center">자식 클래스 내부</td>
-      <td class="text-center">o</td>
-      <td class="text-center">x</td>
-    </tr>
-    <tr>
-      <td class="text-center">클래스 인스턴스를 통한 접근</td>
-      <td class="text-center">o</td>
-      <td class="text-center">x</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-<div>
-
-외부에서 private 필드에 직접 접근할 수 있는 방법은 없다.  
-다만 접근자 프로퍼티를 통해 간접적으로 접근하는 방법은 유효하다.
-
-```javascript
-  class Person {
-    #name = ''; // private 필드 정의
-    constructor(name) {
-      this.#name = name;
-    }
-    //name은 접근자 프로퍼티다.
-    get name() {
-      return this.#name.trim(); // private 필드를 참조하여 trim한 다음 반환한다.
-    }
-  }
-```
-
-private 필드는 반드시 클래스 몸체에 정의해야 한다.
-```javascript
-  class Person {
-    constructor(name) {
-      // private 필드는 클래스 몸체에서 정의해야 한다.
-      this.#name = name;
-      // Uncaught SyntaxError: Private field '#name' must be declared in an enclosing class
-    }
-  }
-```
-</div>
-</div>
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  th, td {
-    text-align: center !important;
-    font-size: 0.6em !important;
-  }
-</style>
-
----
-
-## static 필드 정의 제안
-클래스에는 static 키워드를 사용하여 정적 메서드를 정의 할 수 있지만 정적 필드를 정의할 수는 없었다.  
-하지만 static public 필드, static private 필드, static private 메서드를 정의할 수 있는 새로운 표준 사양이 제안되어있다.  
-<span class="desc">"Class field declarations"가 2021년 1월 TC39 프로세스의 stage3에 제안</span>  
-
-```javascript
-  class MyMath {
-    // static public 필드 정의
-    static PI = 22 / 7;
-
-    // static private 필드 정의
-    static #num = 10;
-
-    // static 메서드
-    static increment() {
-      return ++MyMath.#num;
-    }
-  }
-
-  console.log(MyMath.PI); // 3.142857142857143
-  console.log(MyMath.increment()); // 11
-``` 
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .desc {
-    opacity: 0.5;
-    font-size: 0.8em;
-  }
-</style>
-
----
-
-# 클래스 상속과 생성자 함수 상속
-
-상속에 의한 클래스 확장은 프로토타입 기반 상속과는 다른 개념으로 기존 클래스를 상속받아 새로운 클래스를 확장하여 정의하는 것이다.  
-<strong>코드 재사용 관점에서 매우 유용</strong>
-
-<div grid="~ cols-2 gap-4">
-<div>
-
-```javascript
-  class Animal {
-    constructor(age, weight) {
-      this.age = age;
-      this.weight = weight;
-    }
-    eat() { return 'eat'; }
-    move() { return 'move'; }
-  }
-
-  // 상속을 통해 Animal 클래스를 확장한 Bird 클래스
-  class Bird extends Animal {
-    fly() { return 'fly'; }
-  }
-
-  const bird = new Bird(1, 5);
-``` 
-
-</div>
-<div>
-
-```javascript
-  console.log(bird); // Bird {age: 1, weight: 5}
-  console.log(bird instanceof Bird); // true
-  console.log(bird instanceof Animal); // true
-  console.log(bird.eat()); // eat
-  console.log(bird.move()); // move
-  console.log(bird.fly()); // fly
-``` 
-</div>
-</div>
-
-클래스는 상속을 통해 다른 클래스를 확장할 수 있는 문법인 extends 키워드가 기본적으로 제공된다. 
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .desc {
-    opacity: 0.5;
-    font-size: 0.8em;
-  }
-</style>
-
----
-
-## extends 키워드
-
-상속을 통해 클래스를 확장하려면 extends 키워드를 사용하여 상속받을 클래스를 정의한다.  
-- 상속을 통해 확장된 클래스 -> 서브클래스/파생클래스/자식클래스
-- 서브클래스에게 상속된 클래스 -> 수퍼클래스/베이스클래스/부모클래스  
-
-```javascript
-  // 수퍼(베이스/부모) 클래스
-  class Base {}
-
-  // 서브(파생/자식) 클래스
-  class Derived extends Base {}
-``` 
-
-<div grid="~ cols-2 gap-6">
-<div>
-
-extends 키워드의 역할은 수퍼클래스와 서브클래스 간의 상속 관계를 설정하는 것이다.  
-
-수퍼클래스와 서브클래스는 인스턴스의 프로토타입 체인뿐 아니라 클래스 간의 프로토타입 체인도 생성한다.  
-
-이를 통해 프로토타입 메서드, 정적 메서드 모두 상속이 가능하다.
-
-</div>
-<div>
-  <img  width="350" alt="클래스와 생성자 함수의 정의 방식 비교" src="https://user-images.githubusercontent.com/44577555/170218055-7c74d5ea-fd82-48a2-883e-984fae36d693.png">
-</div>
-</div>
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .desc {
-    opacity: 0.5;
-    font-size: 0.8em;
-  }
-</style>
-
----
-
-## 동적 상속
-
-extends 키워드 다음에는 클래스뿐만이 아니라 [[Construct]] 내부 메서드를 갖는 함수 객체로 평가될 수 있는 모든 표현식을 사용할 수 있다.  
-이를 통해 동적으로 상속받을 대상을 결정할 수 있다. 
-단, extends 키워드 앞에는 반드시 클래스가 와야 한다. 
-
-```javascript
-  function Base1() {}
-
-  class Base2 {}
-
-  let condition = true;
-
-  // 조건에 따라 동적으로 상속 대상을 결정하는 서브클래스
-  class Derived extends (condition ? Base1 : Base2) {}
-
-  const derived = new Derived();
-  console.log(derived); // Derived {}
-  console.log(derived instanceof Base1); // true
-  console.log(derived instanceof Base2); // false
-``` 
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .desc {
-    opacity: 0.5;
-    font-size: 0.8em;
-  }
-</style>
-
----
-
-## 서브클래스의 construtor
-
-<div grid="~ cols-2 gap-6">
-<div>
-
-  클래스에서 constructor를 생략하면 클래스에 다음과 같이 비어있는 constructor가 암묵적으로 정의된다.
-
-  ```javascript
-    constructor() {}
-  ``` 
-</div>
-<div>
-
-  서브 클래스에서 constructor를 생략하면 클래스에 다음과 같은 constructor가 암묵적으로 정의된다.  
-  args는 new 연산자와 함께 클래스를 호출할 때 전달한 인수의 리스트다.
-
-  ```javascript
-    constructor(...args) { super(...args); }  
-  ``` 
-</div>
-</div>
-
-super()는 수퍼클래스의 constructor를 호출하여 인스턴스를 생성한다.
-```javascript
-  // 수퍼클래스
-  class Base {} 
-  /** constructor 생략시 암묵적으로 constructor가 정의된다.
-   *  constructor() {}
-  */
-  // 서브클래스
-  class Derived extends Base {}
-  /** constructor 생략시 암묵적으로 constructor가 정의된다.
-   *  constructor(...args) { super(...args); }  
-  */
-  const derived = new Derived();
-  console.log(derived); // Derived {}
-```
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .desc {
-    opacity: 0.5;
-    font-size: 0.8em;
-  }
-</style>
-
----
-
-## super 키워드
-
-super 키워드는 함수처럼 호출할 수도 있고 this와 같이 식별자처럼 참조할 수 있는 특수한 키워드다.  
-
-### super 동작
-- super를 호출하면 수퍼클래스의 constructor를 호출한다.
-- super를 참조하면 수퍼클래스의 메서드를 호출할 수 있다.  
-
-### super 호출
-super를 호출하면 수퍼클래스의 constructor를 호출한다.  
-new 연산자와 함께 서브클래스를 호출하면서 수퍼클래스의 constructor에 전달할 필요가 있는 인수는 서브클래스의 constructor에서 호출하는 super를 통해 전달한다.
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  h3 {
-    margin-top: 1.2em;
-    color: #9C5170;
-    font-size: 1em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .desc {
-    opacity: 0.5;
-    font-size: 0.8em;
-  }
-</style>
-
----
-
-<div grid="~ cols-2 gap-6">
-<div>
-
-```javascript {all|11,17|11-12|3-5}
-  // 수퍼클래스
-  class Base {
-    constructor(a, b) { // 4
-      this.a = a;
-      this.b = b;
-    }
-  }
-
-  // 서브클래스 
-  class Derived extends Base {
-    constructor(a, b, c) { // 2
-      super(a,b); // 3
-      this.c = c;
-    }
-  }
-
-  const derived = new Derived(1, 2, 3); // 1
-  console.log(derived); // Derived {a: 1, b: 2, c: 3}
+  // {}
 ```
 
 </div>
-<div>
-
-  1 -> Derived 클래스를 호출하면서 전달한 인수 1, 2, 3은 Derived 클래스의 constructor에 전달
-
-  2 -> 전달받은 인수 1, 2, 3
-
-  3 -> super 호출을 통해 1, 2 전달  
-
-  4 -> 1, 2 전달받음
-
 </div>
-</div>
-
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  h3 {
-    margin-top: 1.2em;
-    color: #9C5170;
-    font-size: 1em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .desc {
-    opacity: 0.5;
-    font-size: 0.8em;
-  }
-</style>
-
----
-
-### super를 호출할 때 주의사항  
-1. 서브 클래스에서 constructor를 생략하지 않는 경우 서브클래스의 constructor에서는 반드시 super를 호출해야 한다.
-2. 서브 클래스의 constructor에서 super를 호출하기 전에는 this를 참조할 수 없다.  
-    ```javascript
-      class Base {}
-
-      class Derived extends Base {
-        constructor() {
-          // Uncaught ReferenceError: Must call super constructor in derived class before accessing 'this' or returning from derived constructor
-          this.a = 1;
-          super();
-        }
-      }
-
-      const derived = new Derived();
-    ``` 
-3. super는 반드시 <strong>서브클래스의 constructor에서만 호출</strong>한다. 서브클래스가 아닌 클래스의 constructor나 함수에서 super를 호출하면 에러가 발생한다.
-    ```javascript
-      class Base {
-        constructor() {
-          super(); // SyntaxError: 'super' keyword unexpected here
-        }
-      }
-    ``` 
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  h3 {
-    margin-top: 1.2em;
-    color: #9C5170;
-    font-size: 1em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .desc {
-    opacity: 0.5;
-    font-size: 0.8em;
-  }
-</style>
-
----
-
-### super 참조
-매서드 내에서 super를 참조하면 수퍼클래스의 메서드를 호출할 수 있다.
-
-1. 서브클래스의 프로토타입 메서드 내에서 super.sayHi는 수퍼클래스의 프로토타입 메서드 sayHi를 가리킨다.  
-    ```javascript
-      // 수퍼클래스
-      class Base {
-        constructor(name) {
-          this.name = name;
-        }
-        sayHi() {
-          return `Hi ${this.name}`;
-        }
-      }
-      // 서브클래스
-      class Derived extends Base {
-        sayHi() {
-          // super.sayHi는 수퍼클래스의 프로토타입 메서드를 가리킨다.
-          return `${super.sayHi()}. how are you doing?`;
-        }
-      }
-
-      const derived = new Derived('Choi');
-      console.log(derived.sayHi());  // Hi Choi. how are you doing?
-    ``` 
-    
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  h3 {
-    margin-top: 1.2em;
-    color: #9C5170;
-    font-size: 1em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .desc {
-    opacity: 0.5;
-    font-size: 0.8em;
-  }
-</style>
-
----
-
-super를 참조하고 있는 메서드가 바인딩되어 있는 객체의 프로토타입을 찾기 위해 메서드는 <strong>내부 슬롯 [[HomeObject]]</strong>를 가지며,  
-<strong>자신을 바인딩하고 있는 객체를 가리킨다.</strong>  
-주의할 것은 ES6의 메서드 축약 표현으로 정의된 함수만이 [[HomeObject]]를 갖는다는 것이다.  
-<strong>super 참조</strong>는 수퍼클래스의 메서드를 참조하기 위해 사용하므로 <strong>서브클래스의 메서드에서 사용</strong>해야 한다.
-
-```javascript
-  // 수퍼클래스
-  class Base {
-    constructor(name) {
-      this.name = name;
-    }
-    sayHi() {
-      return `Hi ${this.name}`;
-    }
-  }
-  // 서브클래스
-  class Derived extends Base {
-    sayHi() {
-      const __super = Object.getPrototypeOf(Derived.prototype); // __super는 Base.prototype을 가리킨다.
-      return `${__super.sayHi.call(this)} how are you doing?`; // Base.prototype.sayHi를 호출할 때 call 매서드를 사용해 this를 전달해야 한다.
-    }
-  }
-
-  const derived = new Derived('Choi');
-  console.log(derived.sayHi());  // Hi Choi. how are you doing?
-``` 
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  h3 {
-    margin-top: 1.2em;
-    color: #9C5170;
-    font-size: 1em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .desc {
-    opacity: 0.5;
-    font-size: 0.8em;
-  }
-</style>
-
----
-
-2. 서브 클래스의 정적 메서드 내에서 super.sayHi는 수퍼클래스의 정적 메서드 sayHi를 가리킨다.
-
-```javascript
-  // 수퍼클래스
-  class Base {
-    static sayHi() {
-      return `Hi`;
-    }
-  }
-
-  // 서브클래스
-  class Derived extends Base {
-    static sayHi() {
-      // super.sayHi는 수퍼클래스의 정적 메서드를 가리킨다.
-      return `${super.sayHi()}. how are you doing?`;
-    }
-  }
-  console.log(derived.sayHi());  // Hi. how are you doing?   
-``` 
-
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  h3 {
-    margin-top: 1.2em;
-    color: #9C5170;
-    font-size: 1em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .desc {
-    opacity: 0.5;
-    font-size: 0.8em;
-  }
-</style>
-
----
-
-## 상속 클래스의 인스턴스 생성 과정
-
-
-<div grid="~ cols-2 gap-6">
-<div>
-
-```javascript
-  // 수퍼클래스
-  class Rectangle {
-    constructor(width, height) {
-      this.width = width;
-      this.height = height;
-    }
-    getArea() {
-      return this.width * this.height;
-    }
-    toString() {
-      return `width = ${this.width}, height = ${this.height}`;
-    }
-  }
-  // 서브 클래스
-  class ColorRectangle extends Rectangle {
-    constructor(width, height, color) {
-      super(width, height);
-      this.color = color;
-    }
-    toString() {
-      return super.toString() + `, color = ${this.color}`;
-    }
-  }
-  const colorRectangle = new ColorRectangle(2, 4, 'red');
-``` 
-
-</div>
-<div>
-
-1. 서브클래스의 super 호출  
-2. 수퍼클래스의 인스턴스 생성과 this 바인딩
-3. 수퍼클래스의 인스턴스 초기화
-4. 서브클래스 constructor로의 복귀와 this 바인딩
-5. 서브클래스의 인스턴스 초기화
-6. 인스턴스 반환
-
-</div>
-</div>
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  h3 {
-    margin-top: 1.2em;
-    color: #9C5170;
-    font-size: 1em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .desc {
-    opacity: 0.5;
-    font-size: 0.8em;
-  }
-</style>
-
----
-
-## 1. 서브클래스의 super 호출  
-클래스를 평가할 때 수퍼 클래스와 서브클래스를 구분하기 위해 "base" 또는 "derived"를 값으로 갖는 내부 슬롯[[ConstructorKind]]를 갖는다.  
-
-<strong>다른 클래스를 상속받지 않는 클래스 -> "base"</strong>  
-<strong>다른 클래스를 상속받는 서브 클래스 -> "derived"</strong>  
-
-이를 통해 수퍼클래스와 서브클래스는 new 연산자와 함께 호출되었을 때의 동작이 구분된다.  
-
-서브클래스가 new 연산자와 함께 호출되면 서브클래스 constructor 내부의 super 키워드가 함수처럼 호출된다.  
-super가 호출되면 수퍼클래스의 constructor가 호출된다.
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  h3 {
-    margin-top: 1.2em;
-    color: #9C5170;
-    font-size: 1em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .desc {
-    opacity: 0.5;
-    font-size: 0.8em;
-  }
-</style>
-
----
-
-## 2. 수퍼클래스의 인스턴스 생성과 this 바인딩
-수퍼클래스의 constructor 내부의 코드가 실행되기 이전에 암묵적으로 빈 객체를 생성  
-암묵적으로 생성된 빈 객체, 즉 인스턴스는 this에 바인딩  
-
-new 연산자와 함께 호출된 함수를 가리키는 new.target은 서브클래스를 가리킨다.  
-따라서 인스턴스는 new.target이 가리키는 서브클래스가 생성한 것으로 처리된다.
-```javascript {all|4-7}
-  // 수퍼클래스
-  class Rectangle {
-    constructor(width, height) {
-      // 암묵적으로 빈 객체, 즉 인스턴스가 생성되고 this에 바인딩된다.
-      console.log(this); // ColorRectangle {}
-      // new 연산자와 함께 호출된 함수, 즉 new.target은 ColorRectangle이다.
-      console.log(new.target); // ColorRectangle
-
-      // 생성된 인스턴스의 프로토타입으로 ColorRectangle.prototype이 설정된다.
-      console.log(Object.getPrototypeOf(this) === ColorRectangle.prototype); // true
-      console.log(this instanceof ColorRectangle); // true
-      console.log(this instanceof Rectangle); // true
-  ...
-``` 
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  h3 {
-    margin-top: 1.2em;
-    color: #9C5170;
-    font-size: 1em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .desc {
-    opacity: 0.5;
-    font-size: 0.8em;
-  }
-</style>
-
----
-
-## 3. 수퍼클래스의 인스턴스 초기화
-this에 바인딩되어 있는 인스턴스에 프로퍼티를 추가하고 constructor가 인수로 전달받은 초기값으로 인스턴스의 프로퍼티를 초기화 한다.  
-```javascript {all|13-18}
-  // 수퍼클래스
-  class Rectangle {
-    constructor(width, height) {
-      // 암묵적으로 빈 객체, 즉 인스턴스가 생성되고 this에 바인딩된다.
-      console.log(this); // ColorRectangle {}
-      // new 연산자와 함께 호출된 함수, 즉 new.target은 ColorRectangle이다.
-      console.log(new.target); // ColorRectangle
-
-      // 생성된 인스턴스의 프로토타입으로 ColorRectangle.prototype이 설정된다.
-      console.log(Object.getPrototypeOf(this) === ColorRectangle.prototype); // true
-      console.log(this instanceof ColorRectangle); // true
-      console.log(this instanceof Rectangle); // true
-
-      // 인스턴스 초기화
-      this.width = width;
-      this.height = height;
-
-      console.log(this); // ColorRectangle {width: 2, height: 4}
-    }
-  ...
-```
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  h3 {
-    margin-top: 1.2em;
-    color: #9C5170;
-    font-size: 1em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .desc {
-    opacity: 0.5;
-    font-size: 0.8em;
-  }
-</style>
-
-
----
-
-## 4. 서브클래스 constructor로의 복귀와 this 바인딩
-super의 호출이 종료되고 제어 흐름이 서브클래스 constructor로 돌아온다.  
-이때 super가 반환한 인스턴스가 this에 바인딩된다.  
-서브클래스는 별도의 인스턴스를 생성하지 않고 super가 반환한 인스턴스를 this에 바인딩하여 그대로 사용한다.  
-```javascript
-  // 서브 클래스
-  class ColorRectangle extends Rectangle {
-    constructor(width, height, color) {
-      super(width, height);
-
-      // super가 반환한 인스턴스가 this에 바인딩된다.
-      console.log(this); // ColorRectangle {width: 2, height: 4}
-    }
-  ...
-``` 
-이처럼 super가 호출되지 않으면 인스턴스가 생성되지 않으며, this 바인딩도 할 수 없다.  
-서브클래스의 constructor에서 super를 호출하기 전에는 this를 참조할 수 없는 이유가 바로 이 때문이다.  
-따라서 <strong>서브클래스 constructor 내부의 인스턴스 초기화는 반드시 super 호출 이후에 처리</strong>되어야 한다.
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  h3 {
-    margin-top: 1.2em;
-    color: #9C5170;
-    font-size: 1em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .desc {
-    opacity: 0.5;
-    font-size: 0.8em;
-  }
-</style>
-
----
-
-## 5. 서브클래스의 인스턴스 초기화
-  super 호출 이후, 서브클래스의 constructor에 기술되어 있는 인스턴스 초기화가 실행된다.  
-  즉, this에 바인딩되어 있는 인스턴스에 프로퍼티를 추가하고 constructor가 인수로 전달받은 초기값으로 인스턴스의 프로퍼티를 초기화한다.
-
-## 6. 인스턴스 반환
-  클래스의 모든 처리가 끝나면 완성된 인스턴스가 바인딩된 this가 암묵적으로 반환된다.
-
-  ```javascript
-    // 서브 클래스
-    class ColorRectangle extends Rectangle {
-      constructor(width, height, color) {
-        super(width, height);
-        // super가 반환한 인스턴스가 this에 바인딩된다.
-        console.log(this); // ColorRectangle {width: 2, height: 4}
-        // 인스턴스 초기화
-        this.color = color;
-      }
-      // 완성된 인스턴스가 바인딩된 this가 암묵적으로 반환된다.
-      console.log(this); // ColorRectangle {width: 2, height: 4, color: "red"}
-    }
-  ```
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  h3 {
-    margin-top: 1.2em;
-    color: #9C5170;
-    font-size: 1em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .desc {
-    opacity: 0.5;
-    font-size: 0.8em;
-  }
-</style>
-
----
-
-## 표준 빌트인 생성자 함수 확장
-extends 키워드 다음에는 클래스뿐만이 아니라 [[Construct]] 내부 메서드를 갖는 함수 객체로 평가될 수 있는 모든 표현식을 사용할 수 있다.  
-String, Number, Array 같은 표준 빌트인 객체도 [[Construct]] 내부 메서드를 갖는 생성자 함수이므로 extends 키워드를 사용하여 확장할 수 있다. 
-```javascript
-  // Array 생성자 함수를 상속받아 확장한 MyArray
-  class MyArray extends Array {
-    // 중복된 배열 요소를 제거하고 반환한다: [1, 1, 2, 3] => [1, 2, 3]
-    uniq() {
-      return this.filter((v, i, self) => self.indexOf(v) === i);
-    }
-    // 모든 배열 요소의 평균을 구한다: [1, 2, 3] => 2
-    average() {
-      return this.reduce((pre, cur) => pre + cur, 0) / this.length;
-    }
-  }
-
-  const myArray = new MyArray(1, 1, 2, 3);
-  console.log(myArray); // MyArray(4) [1, 1, 2, 3]
-
-  // MyArray.prototype.uniq 호출
-  console.log(myArray.uniq()); // MyArray(3) [1, 2, 3]
-  // MyArray.prototype.average 호출
-  console.log(myArray.average()); // 1.75
-``` 
-
-<div style="position:absolute; bottom:50px; right: 60px; width: 400px; font-size: 0.7em; line-height: 1.5; word-break: keep-all;">
-  Array 생성자 함수를 상속받아 확장한 MyArray 클래스가 생성한 인스턴스는 Array.prototype과 MyArray.prototype의 모든 메서드를 사용할 수 있다.
-</div>
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  h3 {
-    margin-top: 1.2em;
-    color: #9C5170;
-    font-size: 1em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .desc {
-    opacity: 0.5;
-    font-size: 0.8em;
-  }
-</style>
-
----
-
-🖐❕ Array.prototype의 메서드 중에서 map, filter와 같이 새로운 배열을 반환하는 메서드가 MyArray 클래스의 인스턴스를 반환한다는 것에 주의하자.
-
-```javascript
-  console.log(myArray.filter(v => v % 2) instanceof MyArray); // true
-``` 
-
-만약 새로운 배열을 반환하는 메서드가 MyArray 클래스의 인스턴스를 반환하지 않고 Array의 인스턴스를 반환하면 MyArray 클래스의 메서드와 메서드 체이닝이 불가능하다.
-```javascript
-  // 메서드 체이닝
-  // [1, 1, 2, 3] => [1, 1, 3] => [1, 3] => 2
-  console.log(myArray.filter(v => v % 2).uniq().averge()); // 2 
-```
-
-myArray.filter가 반환하는 인스턴스는 MyArray 클래스가 생성한 인스턴스, 즉 MyArray 타입이다.  
-따라서 myArray.filter가 반환하는 인스턴스로 uniq 메서드를 연이어 호출할 수 있다.
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  h3 {
-    margin-top: 1.2em;
-    color: #9C5170;
-    font-size: 1em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .desc {
-    opacity: 0.5;
-    font-size: 0.8em;
-  }
-</style>
-
----
-
-만약 MyArray 클래스의 uniq 메서드가 MyArray 클래스가 생성한 인스턴스가 아닌 Array가 생성한 인스턴스를 반환하게 하려면 다음과 같이 <strong>Symbol.species</strong>를 사용하여 정적 접근자 프로퍼티를 추가한다.
-```javascript
-  // Array 생성자 함수를 상속받아 확장한 MyArray
-  class MyArray extends Array {
-    // 모든 메서드가 Array 타입의 인스턴스를 반환하도록 한다.
-    static get [Symbol.species]() {return Array;}
-    uniq() {
-      return this.filter((v, i, self) => self.indexOf(v) === i);
-    }
-    average() {
-      return this.reduce((pre, cur) => pre + cur, 0) / this.length;
-    }
-  }
-
-  const myArray = new MyArray(1, 1, 2, 3);
-
-  console.log(myArray.uniq() instanceof MyArray); //false
-  console.log(myArray.average() instanceof Array); // true
-
-  // 메서드 체이닝
-  // uniq 메서드는 Array 인스턴스를 반환하므로 average 메서드를 호출할 수 없다.
-  console.log(myArray.uniq().average());
-  // TypeError: myArray.uniq(...).average is not a function
-```
-
-<style>
-  h2 {
-    color: #b39c36;
-    font-size: 1.2em !important;
-  }
-  h3 {
-    margin-top: 1.2em;
-    color: #9C5170;
-    font-size: 1em !important;
-  }
-  p, li {
-    font-size: 0.8em !important;
-  }
-  .slidev-layout h1 + p {
-    opacity: 1;
-  }
-  strong {
-    font-weight: bold;
-    color: #b5794a;
-  }
-  .desc {
-    opacity: 0.5;
-    font-size: 0.8em;
-  }
-</style>
 
 ---
 layout: center
@@ -2625,3 +1220,4 @@ class: text-center
 ---
 
 # Thanks!
+12주 동안 고생 많으셨습니다!
